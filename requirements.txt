@@ -1,0 +1,17 @@
+asgiref==3.8.1
+distlib==0.3.9
+-e c:\users\cukin\django
+django-filter==25.1
+djangorestframework==3.16.0
+filelock==3.18.0
+Markdown==3.8
+mysql==0.0.3
+mysql-connector-python==9.3.0
+mysqlclient==2.2.7
+pillow==11.2.1
+platformdirs==4.3.8
+psycopg2==2.9.10
+PyMySQL==1.1.1
+sqlparse==0.5.3
+tzdata==2025.2
+virtualenv==20.31.2
