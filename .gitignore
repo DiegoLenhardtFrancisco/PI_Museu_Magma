@@ -1,0 +1,12 @@
+﻿# Python bytecode e caches
+__pycache__/
+*.pyc
+
+# Banco SQLite local
+db.sqlite3
+
+# Ambiente virtual
+venv/
+
+# Configuração do VSCode
+.vscode/
