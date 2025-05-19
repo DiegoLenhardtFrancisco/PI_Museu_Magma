@@ -1,0 +1,91 @@
+{% extends "produtos/base_produto.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/relatorio_inventario.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="form-header">
+        <h2><i class="fas fa-clipboard-list"></i> Relatório de Inventário</h2>
+    </div>
+
+    <div class="search-section">
+        <form method="get" class="search-form">
+            <div class="search-input-group">
+                <label for="cod_de" class="search-label">De código:</label>
+                <input type="text" name="cod_de" value="{{ request.GET.cod_de }}"
+                       class="form-control" placeholder="Ex: 001">
+            </div>
+
+            <div class="search-input-group">
+                <label for="cod_ate" class="search-label">Até código:</label>
+                <input type="text" name="cod_ate" value="{{ request.GET.cod_ate }}"
+                       class="form-control" placeholder="Ex: 100">
+            </div>
+
+            <div class="search-input-group" style="flex: 1 1 100%;">
+                <label for="codigos" class="search-label">Códigos específicos:</label>
+                <input type="text" name="codigos" value="{{ request.GET.codigos }}"
+                       class="form-control" placeholder="Separe por vírgula">
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Filtrar
+            </button>
+            <button onclick="window.print()" type="button" class="btn btn-print">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+        </form>
+    </div>
+
+    <div class="data-section">
+        <div class="data-table">
+            <table class="table-responsive">
+                <thead>
+                    <tr>
+                        <th scope="col"><i class="fas fa-hashtag"></i> Código</th>
+                        <th scope="col"><i class="fas fa-cube"></i> Nome</th>
+                        <th scope="col"><i class="fas fa-boxes"></i> Quantidade</th>
+                        <th scope="col"><i class="fas fa-map-marker-alt"></i> Localização</th>
+                        <th scope="col" class="no-print"><i class="fas fa-edit"></i> Ajuste</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produtos %}
+                    <tr>
+                        <td class="product-code">{{ produto.codigo }}</td>
+                        <td class="product-name">{{ produto.nome }}</td>
+                        <td class="quantity">{{ produto.quantidade }}</td>
+                        <td class="location">{{ produto.endereco_estoque|default:"-" }}</td>
+                        <td class="no-print">
+                            <form method="post" class="adjust-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="codigo_produto" value="{{ produto.codigo }}">
+                                <div class="input-group">
+                                    <input type="number" name="nova_quantidade" 
+                                           min="0" 
+                                           value="{{ produto.quantidade }}"
+                                           class="form-control"
+                                           required aria-label="Nova quantidade">
+                                    <button type="submit" class="btn btn-save" aria-label="Salvar ajuste">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="no-results">
+                            <i class="fas fa-box-open"></i> Nenhum produto encontrado
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

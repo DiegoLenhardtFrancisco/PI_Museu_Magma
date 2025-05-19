@@ -1,0 +1,164 @@
+{% extends "produtos/base_produto.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-container">
+    <div class="form-header">
+        <h2><i class="fas fa-cube"></i> Cadastrar Novo Produto</h2>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="product-form">
+        {% csrf_token %}
+
+        <!-- Exibição de erros gerais -->
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Corrija os seguintes erros:</strong>
+            <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="form-grid">
+            <!-- Código do Produto -->
+            <div class="form-group">
+                <label for="id_codigo" aria-describedby="codigoError">
+                    <i class="fas fa-barcode"></i> {{ form.codigo.label }}
+                </label>
+                {{ form.codigo }}
+                {% if form.codigo.errors %}
+                    <div id="codigoError" class="error">{{ form.codigo.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Nome -->
+            <div class="form-group">
+                <label for="id_nome" aria-describedby="nomeError">
+                    <i class="fas fa-tag"></i> {{ form.nome.label }}
+                </label>
+                {{ form.nome }}
+                {% if form.nome.errors %}
+                    <div id="nomeError" class="error">{{ form.nome.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Descrição -->
+            <div class="form-group full-width">
+                <label for="id_descricao">
+                    <i class="fas fa-align-left"></i> {{ form.descricao.label }}
+                </label>
+                {{ form.descricao }}
+            </div>
+
+            <!-- Preço -->
+            <div class="form-group">
+                <label for="id_preco_custo" aria-describedby="precoError">
+                    <i class="fas fa-dollar-sign"></i> {{ form.preco_custo.label }}
+                </label>
+                <div class="input-group">
+                    <span class="currency">R$</span>
+                    {{ form.preco_custo }}
+                </div>
+                {% if form.preco_custo.errors %}
+                    <div id="precoError" class="error">{{ form.preco_custo.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Quantidade -->
+            <div class="form-group">
+                <label for="id_quantidade">
+                    <i class="fas fa-boxes"></i> {{ form.quantidade.label }}
+                </label>
+                {{ form.quantidade }}
+            </div>
+
+            <!-- Quantidade Mínima -->
+            <div class="form-group">
+                <label for="id_quantidade_minima">
+                    <i class="fas fa-exclamation-triangle"></i> {{ form.quantidade_minima.label }}
+                </label>
+                {{ form.quantidade_minima }}
+            </div>
+
+            <!-- Unidade de Medida -->
+            <div class="form-group">
+                <label for="id_unidade_medida">
+                    <i class="fas fa-ruler"></i> {{ form.unidade_medida.label }}
+                </label>
+                {{ form.unidade_medida }}
+            </div>
+
+            <!-- Categoria -->
+            <div class="form-group">
+                <label for="id_categoria">
+                    <i class="fas fa-folder-open"></i> {{ form.categoria.label }}
+                </label>
+                {{ form.categoria }}
+            </div>
+
+            <!-- Fornecedor -->
+            <div class="form-group">
+                <label for="id_fornecedor">
+                    <i class="fas fa-truck"></i> {{ form.fornecedor.label }}
+                </label>
+                {{ form.fornecedor }}
+            </div>
+
+            <!-- Data de Validade -->
+            <div class="form-group">
+                <label for="id_data_validade">
+                    <i class="fas fa-calendar-alt"></i> {{ form.data_validade.label }}
+                </label>
+                {{ form.data_validade }}
+            </div>
+
+            <!-- Endereço Estoque -->
+            <div class="form-group">
+                <label for="id_endereco_estoque">
+                    <i class="fas fa-map-marker-alt"></i> {{ form.endereco_estoque.label }}
+                </label>
+                {{ form.endereco_estoque }}
+            </div>
+
+            <!-- Imagem -->
+            <div class="form-group full-width">
+                <label for="id_imagem">
+                    <i class="fas fa-image"></i> {{ form.imagem.label }}
+                </label>
+                <div class="file-upload">
+                    {{ form.imagem }}
+                    <small>Formato permitido: JPG, PNG | Tamanho máximo: 2MB</small>
+                </div>
+            </div>
+
+            <!-- Produto Ativo -->
+            <div class="form-group checkbox-group full-width">
+                <label for="id_ativo">
+                    {{ form.ativo }}
+                    <span class="checkmark"></span>
+                    <i class="fas fa-check-circle"></i> Produto Ativo
+                </label>
+            </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-save"></i> Salvar Produto
+            </button>
+            <a href="{% url 'produtos:base_produto' %}" class="btn btn-cancel">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/form_produto.css' %}">
+{% endblock %}

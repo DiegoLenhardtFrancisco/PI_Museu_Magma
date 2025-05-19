@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Vendas Rápidas</title>
+    <link rel="stylesheet" href="{% static 'css/vendas.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="vendas-header">
+        <div class="header-top">
+            <div class="logo">
+                <img src="{% static 'img/logo.webp' %}" alt="Logo" class="logo-img">
+            </div>
+            <div class="user-info">
+                <span class="username">{{ user.get_full_name|default:user.username }}</span>
+                
+                {% if user.tipo_usuario == 'ADMIN' %}
+                <a href="{% url 'admin:index' %}" class="voltar-btn">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                {% endif %}
+                
+                <button onclick="window.history.back()" class="voltar-btn">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+                
+                <form method="post" action="{% url 'usuarios:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main class="vendas-main">
+        <div class="venda-container">
+            <h1>Venda Rápida</h1>
+
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="GET" class="pesquisa-box">
+                <input type="text" name="q" placeholder="Pesquisar por código ou nome..." 
+                       value="{{ request.GET.q }}" autofocus>
+                <button type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <div class="listas-container">
+                <!-- Lista de Produtos -->
+                <div class="lista-produtos">
+                    <h3>Produtos Disponíveis</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nome</th>
+                                <th>Estoque</th>
+                                <th>Preço</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for produto in produtos %}
+                            <tr>
+                                <td>{{ produto.codigo }}</td>
+                                <td>{{ produto.nome }}</td>
+                                <td>{{ produto.quantidade }}</td>
+                                <td>R$ {{ produto.preco_venda|floatformat:2 }}</td>
+                                <td>
+                                    <a href="?adicionar={{ produto.id }}" class="btn-selecionar">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Carrinho de Vendas -->
+                <div class="carrinho-vendas">
+                    <h3>Carrinho</h3>
+                    <div class="carrinho-items">
+                        {% for item in carrinho %}
+                        <div class="carrinho-item">
+                            <span>{{ item.nome }}</span>
+                            <span>Qtd: {{ item.quantidade }}</span>
+                            <span>R$ {{ item.subtotal|floatformat:2 }}</span>
+                            <a href="?remover={{ item.produto_id }}" class="btn-remover">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                        {% empty %}
+                        <div class="carrinho-vazio">Nenhum item no carrinho</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="total-section">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="total-info">
+                                <div class="total-linha">
+                                    <span>Total Bruto:</span>
+                                    <span>R$ {{ total_bruto|floatformat:2 }}</span>
+                                </div>
+                                
+                                <div class="total-linha">
+                                    <span>Margem Disponível:</span>
+                                    <span>R$ {{ margem_disponivel|floatformat:2 }}</span>
+                                </div>
+
+                                <div class="total-linha">
+                                    <label for="desconto">Desconto:</label>
+                                    <input type="number" name="desconto" id="desconto" 
+                                           step="0.01" min="0" max="{{ margem_disponivel|floatformat:2 }}"
+                                           value="{{ desconto|default:0 }}" 
+                                           required>
+                                </div>
+
+                                <div class="total-linha destaque">
+                                    <span>Total Líquido:</span>
+                                    <span>R$ {{ total|floatformat:2 }}</span>
+                                </div>
+                            </div>
+
+                            <select name="forma_pagamento" class="forma-pagamento" required>
+                                {% for forma in formas_pagamento %}
+                                <option value="{{ forma.0 }}">{{ forma.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <button type="submit" class="btn-finalizar">
+                                <i class="fas fa-check"></i> Finalizar Venda
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

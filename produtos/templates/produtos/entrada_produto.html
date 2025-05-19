@@ -1,0 +1,124 @@
+{% extends "produtos/base_produto.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/entrada_produto.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="form-header">
+        <h2><i class="fas fa-box-open"></i> Atualizar Produto - Entrada de Material</h2>
+    </div>
+
+    <div class="search-section">
+        <form method="post" class="search-form">
+            {% csrf_token %}
+            <div class="search-input-group">
+                <input type="text" id="busca" name="busca" 
+                       class="form-control" 
+                       placeholder="Digite o código ou nome do produto"
+                       required>
+                <label for="busca" class="search-label">
+                    <i class="fas fa-search"></i> Buscar Produto:
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </form>
+    </div>
+
+    {% if produto %}
+    <div class="product-card">
+        <div class="product-header">
+            <h3>Produto Encontrado</h3>
+            <span class="product-status {% if produto.ativo %}active{% else %}inactive{% endif %}">
+                {{ produto.ativo|yesno:"Ativo,Inativo" }}
+            </span>
+        </div>
+        
+        <div class="product-details">
+            <div class="detail-item">
+                <span class="detail-label">Nome:</span>
+                <span class="detail-value">{{ produto.nome }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Código:</span>
+                <span class="detail-value">{{ produto.codigo }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Fornecedor:</span>
+                <span class="detail-value">{{ produto.fornecedor|default:"-" }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Preço de Custo:</span>
+                <span class="detail-value">R$ {{ produto.preco_custo }}</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="update-form">
+        {% csrf_token %}
+        <input type="hidden" name="atualizar" value="1">
+        <input type="hidden" name="codigo_produto" value="{{ produto.codigo }}">
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="quantidade">
+                    <i class="fas fa-cubes"></i> Quantidade a Adicionar
+                </label>
+                {{ form.quantidade }}
+            </div>
+
+            <div class="form-group">
+                <label for="preco_custo">
+                    <i class="fas fa-dollar-sign"></i> Novo Preço de Custo
+                </label>
+                {{ form.preco_custo }}
+            </div>
+
+            <div class="form-group">
+                <label for="fornecedor">
+                    <i class="fas fa-truck"></i> Fornecedor
+                </label>
+                {{ form.fornecedor }}
+            </div>
+
+            <div class="form-group">
+                <label for="endereco_estoque">
+                    <i class="fas fa-map-marker-alt"></i> Endereço no Estoque
+                </label>
+                {{ form.endereco_estoque }}
+            </div>
+
+            <div class="form-group full-width">
+                <label for="imagem">
+                    <i class="fas fa-image"></i> Atualizar Imagem do Produto
+                </label>
+                <div class="file-upload">
+                    {{ form.imagem }}
+                </div>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <label for="ativo">
+                    {{ form.ativo }}
+                    <span class="checkmark"></span>
+                    Produto Ativo
+                </label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-save"></i> Atualizar Estoque
+            </button>
+            <a href="{% url 'produtos:base_produto' %}" class="btn btn-cancel">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

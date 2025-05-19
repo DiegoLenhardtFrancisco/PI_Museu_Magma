@@ -1,0 +1,92 @@
+{% extends "produtos/base_produto.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/historico_individual.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="form-header">
+        <h2><i class="fas fa-history"></i> Histórico de Movimentações</h2>
+    </div>
+
+    <div class="search-section">
+        <form method="get" class="search-form">
+            <div class="search-input-group">
+                <label for="codigo-produto" class="search-label">Digite o código ou nome do produto</label>
+                <input type="text" id="codigo-produto" name="q" value="{{ query }}"
+                       placeholder="Ex: 12345"
+                       class="form-control"
+                       aria-label="Pesquisar produto">
+            </div>
+            <button type="submit" class="btn">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </form>
+    </div>
+    
+
+    {% if produto %}
+    <div class="product-card">
+        <div class="product-header">
+            <h3>{{ produto.nome }} <span class="product-code">({{ produto.codigo }})</span></h3>
+            <div class="product-status">
+                <span class="badge quantity">{{ produto.quantidade }} {{ produto.get_unidade_medida_display }}</span>
+                <span class="badge price">R$ {{ produto.preco_custo|floatformat:2 }}</span>
+            </div>
+        </div>
+        
+        <div class="product-details">
+            <div class="detail-item">
+                <i class="fas fa-truck"></i>
+                <span>{{ produto.fornecedor|default:"Fornecedor não informado" }}</span>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ produto.endereco_estoque|default:"Endereço não definido" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-section">
+        <div class="section-header">
+            <h4><i class="fas fa-exchange-alt"></i> Últimas Movimentações</h4>
+        </div>
+        
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col"><i class="fas fa-calendar-alt"></i> Data</th>
+                        <th scope="col"><i class="fas fa-tag"></i> Tipo</th>
+                        <th scope="col"><i class="fas fa-cubes"></i> Quantidade</th>
+                        <th scope="col"><i class="fas fa-dollar-sign"></i> Preço</th>
+                        <th scope="col"><i class="fas fa-truck"></i> Fornecedor</th>
+                        <th scope="col"><i class="fas fa-comment"></i> Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mov in movimentacoes %}
+                    <tr class="movement-type-{{ mov.tipo|lower }}">
+                        <td>{{ mov.data_movimentacao|date:"d/m/Y H:i" }}</td>
+                        <td><span class="movement-badge">{{ mov.get_tipo_display }}</span></td>
+                        <td>{{ mov.quantidade }}</td>
+                        <td>R$ {{ mov.preco_custo|floatformat:2 }}</td>
+                        <td>{{ mov.fornecedor|default:"-" }}</td>
+                        <td class="observacao">{{ mov.observacao|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="no-results">
+                            <i class="fas fa-info-circle"></i> Nenhuma movimentação encontrada
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

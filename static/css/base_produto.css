@@ -1,0 +1,174 @@
+:root {
+    --primary-color: #1f394b;    /* Azul escuro */
+    --secondary-color: #f7f714;  /* Amarelo vibrante */
+    --accent-color: #2d4d63;     /* Azul médio */
+    --text-light: #ffffff;
+}
+
+/* Reset e Estilos Globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background-image: url("/static/img/quart.jpg");
+    background-size: cover;  /* Faz a imagem cobrir toda a tela */
+    background-position: center;  /* Centraliza a imagem */
+    background-attachment: fixed; /* Faz a imagem ficar fixa ao rolar a página */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Header Top */
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--primary-color);
+}
+
+.logo-img {
+    height: 50px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.username {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.logout-btn {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Header Bottom */
+.header-bottom {
+    background: var(--secondary-color);
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-bottom h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.main-menu {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.menu-item {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.menu-item:hover {
+    background: var(--primary-color);
+    color: var(--text-light);
+    transform: translateY(-2px);
+}
+
+.menu-item i {
+    font-size: 1.2rem;
+}
+
+/* Conteúdo Principal */
+main {
+    flex: 1;
+    padding: 2rem;
+    margin-top: 150px; /* Espaço para o cabeçalho fixo */
+    margin-bottom: 60px; /* Espaço para o footer */
+}
+
+/* Footer */
+footer {
+    background: var(--primary-color);
+    color: var(--text-light);
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.footer-content p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .main-menu {
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    main {
+        margin-top: 200px;
+        padding: 1rem;
+    }
+}
+
+.voltar-btn {
+    background: transparent;
+    color: var(--secondary-color);
+    border: 2px solid var(--secondary-color);
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.voltar-btn:hover {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}

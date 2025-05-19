@@ -1,0 +1,57 @@
+/* Estilo Geral */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Botões personalizados */
+#user-tools .custom-button {
+    background-color: #1f394b; /* Cor primária */
+    color: #f7f714; /* Cor secundária */
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 15px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#user-tools .custom-button:hover {
+    background-color: #f7f714; /* Cor secundária */
+    color: #1f394b; /* Cor primária */
+}
+
+/* Ícones */
+#user-tools .custom-button i {
+    margin-right: 8px;
+}
+
+/* Botão de logout */
+.button-link {
+    color: #ff5722;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.button-link:hover {
+    color: #dc3545;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #user-tools {
+        display: block;
+        text-align: center;
+    }
+
+    #user-tools .custom-button {
+        display: block;
+        margin-bottom: 15px;
+    }
+}
