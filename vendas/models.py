@@ -1,16 +1,18 @@
-from django.db import models
+from decimal import Decimal
+
 from django.core.validators import MinValueValidator
+from django.db import models, transaction
+
 from produtos.models import Produto
 from usuarios.models import CustomUser
-from decimal import Decimal
-from django.db import transaction
+
 
 class Cliente(models.Model):
     TIPO_CLIENTE_CHOICES = [
         ('PF', 'Pessoa Física'),
         ('PJ', 'Pessoa Jurídica'),
     ]
-    
+
     nome = models.CharField(max_length=100)
     documento = models.CharField(max_length=20, unique=True)
     tipo = models.CharField(max_length=2, choices=TIPO_CLIENTE_CHOICES)
@@ -27,13 +29,14 @@ class Cliente(models.Model):
     def __str__(self):
         return f"{self.nome} ({self.documento})"
 
+
 class Venda(models.Model):
     STATUS_CHOICES = [
         ('A', 'Aberta'),
         ('F', 'Finalizada'),
         ('C', 'Cancelada'),
     ]
-    
+
     FORMA_PAGAMENTO_CHOICES = [
         ('DI', 'Dinheiro'),
         ('CD', 'Cartão Débito'),
@@ -41,13 +44,17 @@ class Venda(models.Model):
         ('PX', 'Pix'),
         ('BO', 'Boleto'),
     ]
-    
-    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True)
+
+    cliente = models.ForeignKey(
+        Cliente, on_delete=models.SET_NULL, null=True, blank=True
+    )
     usuario = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     data_venda = models.DateTimeField(auto_now_add=True)
     forma_pagamento = models.CharField(max_length=2, choices=FORMA_PAGAMENTO_CHOICES)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='A')
-    desconto = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    desconto = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)]
+    )
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     observacoes = models.TextField(blank=True)
     custo_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -74,10 +81,13 @@ class Venda(models.Model):
     def __str__(self):
         return f"Venda #{self.id} - {self.data_venda.strftime('%d/%m/%Y')}"
 
+
 class ItemVenda(models.Model):
     venda = models.ForeignKey(Venda, related_name='itens', on_delete=models.CASCADE)
     produto = models.ForeignKey(Produto, on_delete=models.PROTECT)
-    quantidade = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    quantidade = models.DecimalField(
+        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))]
+    )
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:

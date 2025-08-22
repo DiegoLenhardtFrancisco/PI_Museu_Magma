@@ -1,6 +1,8 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
-from decimal import Decimal
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
@@ -13,10 +15,13 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, username, email, password=None, **extra_fields):
-        extra_fields.setdefault('tipo_usuario', 'ADMIN')  # Força ADMIN para superusuários
+        extra_fields.setdefault(
+            'tipo_usuario', 'ADMIN'
+        )  # Força ADMIN para superusuários
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, email, password, **extra_fields)
+
 
 class CustomUser(AbstractUser):
     TIPO_USUARIO_CHOICES = [
@@ -24,23 +29,19 @@ class CustomUser(AbstractUser):
         ('VENDEDOR', 'Vendedor'),
         ('ESTOQUISTA', 'Estoquista'),
     ]
-    
+
     tipo_usuario = models.CharField(
-        max_length=10,
-        choices=TIPO_USUARIO_CHOICES,
-        default='VENDEDOR'
+        max_length=10, choices=TIPO_USUARIO_CHOICES, default='VENDEDOR'
     )
-    
+
     # Email como campo obrigatório e único
     email = models.EmailField(unique=True)
 
     # 💰 Campo de saldo
     saldo = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=Decimal('0.00')
+        max_digits=10, decimal_places=2, default=Decimal('0.00')
     )
-    
+
     # Substitui o manager padrão
     objects = CustomUserManager()
 
@@ -50,15 +51,15 @@ class CustomUser(AbstractUser):
         related_name='customuser_set',
         related_query_name='customuser',
         blank=True,
-        verbose_name='Grupos'
+        verbose_name='Grupos',
     )
-    
+
     user_permissions = models.ManyToManyField(
         'auth.Permission',
         related_name='customuser_set',
         related_query_name='customuser',
         blank=True,
-        verbose_name='Permissões'
+        verbose_name='Permissões',
     )
 
     # Campos obrigatórios para o createsuperuser

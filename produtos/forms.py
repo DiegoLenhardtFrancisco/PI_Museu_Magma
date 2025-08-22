@@ -1,5 +1,7 @@
 from decimal import Decimal
+
 from django import forms
+
 from .models import Produto
 
 
@@ -7,15 +9,25 @@ class ProdutoForm(forms.ModelForm):
     """
     Formulário principal para cadastro de produtos.
     """
+
     codigo = forms.CharField(disabled=True, required=False, label='Código')
 
     class Meta:
         model = Produto
         fields = [
-            'nome', 'descricao', 'codigo', 'preco_custo',
-            'quantidade', 'unidade_medida', 'categoria', 'fornecedor',
-            'data_validade', 'quantidade_minima', 'imagem',
-            'endereco_estoque', 'ativo',
+            'nome',
+            'descricao',
+            'codigo',
+            'preco_custo',
+            'quantidade',
+            'unidade_medida',
+            'categoria',
+            'fornecedor',
+            'data_validade',
+            'quantidade_minima',
+            'imagem',
+            'endereco_estoque',
+            'ativo',
         ]
         widgets = {
             'descricao': forms.Textarea(attrs={'rows': 3}),
@@ -36,9 +48,17 @@ class EntradaProdutoForm(forms.ModelForm):
     """
     Formulário para registrar entrada ou atualização de estoque.
     """
+
     class Meta:
         model = Produto
-        fields = ['quantidade', 'fornecedor', 'preco_custo', 'ativo', 'endereco_estoque', 'imagem']
+        fields = [
+            'quantidade',
+            'fornecedor',
+            'preco_custo',
+            'ativo',
+            'endereco_estoque',
+            'imagem',
+        ]
         widgets = {
             'quantidade': forms.NumberInput(attrs={'step': '0.01', 'min': '0'}),
             'preco_custo': forms.NumberInput(attrs={'step': '0.01', 'min': '0'}),
