@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Cliente, Venda, ItemVenda
+
+from .models import Cliente, ItemVenda, Venda
+
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
@@ -8,6 +10,7 @@ class ClienteAdmin(admin.ModelAdmin):
     list_filter = ['tipo']
     ordering = ['nome']
 
+
 @admin.register(Venda)
 class VendaAdmin(admin.ModelAdmin):
     list_display = ['id', 'data_venda', 'cliente', 'total', 'forma_pagamento', 'status']
@@ -15,6 +18,7 @@ class VendaAdmin(admin.ModelAdmin):
     search_fields = ['cliente__nome', 'id']
     readonly_fields = ['total', 'data_venda']
     date_hierarchy = 'data_venda'
+
 
 @admin.register(ItemVenda)
 class ItemVendaAdmin(admin.ModelAdmin):

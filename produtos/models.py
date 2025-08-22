@@ -1,8 +1,8 @@
 from decimal import Decimal
 
-from django.db import models
 from django.core.validators import MinValueValidator
-from django.db.models.signals import pre_save, post_save
+from django.db import models
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
@@ -10,6 +10,7 @@ class Categoria(models.Model):
     """
     Representa categorias fixas para classificação dos produtos.
     """
+
     CATEGORIA_CHOICES = [
         ('FOSSIL', 'Fóssil'),
         ('ARTESANATO', 'Artesanato'),
@@ -27,6 +28,7 @@ class Produto(models.Model):
     """
     Modelo principal para cadastro de produtos no sistema de estoque.
     """
+
     UNIDADE_CHOICES = [
         ('UN', 'Unidade'),
         ('KG', 'Quilograma'),
@@ -43,9 +45,7 @@ class Produto(models.Model):
     )
     margem_lucro = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
-    preco_venda = models.DecimalField(
-        max_digits=10, decimal_places=2, editable=False
-    )
+    preco_venda = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
 
     quantidade = models.DecimalField(
         max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)]
@@ -75,7 +75,9 @@ class Produto(models.Model):
         Recalcula o preço de venda antes de salvar, baseado no custo e margem.
         """
         if self.preco_custo is not None and self.margem_lucro is not None:
-            self.preco_venda = self.preco_custo * (Decimal(1) + Decimal(self.margem_lucro) / Decimal(100))
+            self.preco_venda = self.preco_custo * (
+                Decimal(1) + Decimal(self.margem_lucro) / Decimal(100)
+            )
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -86,6 +88,7 @@ class MovimentacaoEstoque(models.Model):
     """
     Registra entradas, saídas e ajustes de estoque de um produto.
     """
+
     TIPO_CHOICES = [
         ('E', 'Entrada'),
         ('S', 'Saída'),
@@ -101,7 +104,9 @@ class MovimentacaoEstoque(models.Model):
     observacao = models.TextField(blank=True)
     endereco_estoque = models.CharField(max_length=255, null=True, blank=True)
 
-    usuario = models.ForeignKey('usuarios.CustomUser', on_delete=models.SET_NULL, null=True)
+    usuario = models.ForeignKey(
+        'usuarios.CustomUser', on_delete=models.SET_NULL, null=True
+    )
     data_movimentacao = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -114,6 +119,7 @@ class MovimentacaoEstoque(models.Model):
 
 
 # === SINAIS DE MODELO PARA RASTREAMENTO AUTOMÁTICO ===
+
 
 @receiver(pre_save, sender=Produto)
 def capturar_valores_antes_alteracao(sender, instance, **kwargs):
@@ -143,7 +149,7 @@ def criar_movimentacao_apos_alteracao(sender, instance, created, **kwargs):
             fornecedor=instance.fornecedor,
             observacao="Cadastro inicial do produto",
             usuario=instance.usuario,
-            endereco_estoque=instance.endereco_estoque
+            endereco_estoque=instance.endereco_estoque,
         )
     elif hasattr(instance, '_original_quantidade'):
         observacoes = []
@@ -164,8 +170,12 @@ def criar_movimentacao_apos_alteracao(sender, instance, created, **kwargs):
         else:
             # Lógica original para outros tipos de alteração
             if instance.quantidade != instance._original_quantidade:
-                tipo = 'E' if instance.quantidade > instance._original_quantidade else 'S'
-                quantidade_diff = abs(instance.quantidade - instance._original_quantidade)
+                tipo = (
+                    'E' if instance.quantidade > instance._original_quantidade else 'S'
+                )
+                quantidade_diff = abs(
+                    instance.quantidade - instance._original_quantidade
+                )
                 observacoes.append(f"Quantidade alterada em {quantidade_diff}")
 
             if instance.preco_custo != instance._original_preco_custo:
@@ -175,7 +185,9 @@ def criar_movimentacao_apos_alteracao(sender, instance, created, **kwargs):
                 observacoes.append(f"Fornecedor alterado para {instance.fornecedor}")
 
             if instance.endereco_estoque != instance._original_endereco:
-                observacoes.append(f"Endereço alterado para {instance.endereco_estoque}")
+                observacoes.append(
+                    f"Endereço alterado para {instance.endereco_estoque}"
+                )
 
         if observacoes:
             MovimentacaoEstoque.objects.create(
@@ -186,5 +198,5 @@ def criar_movimentacao_apos_alteracao(sender, instance, created, **kwargs):
                 fornecedor=instance.fornecedor,
                 observacao=". ".join(observacoes),
                 usuario=instance.usuario,
-                endereco_estoque=instance.endereco_estoque
+                endereco_estoque=instance.endereco_estoque,
             )

@@ -1,11 +1,12 @@
 from decimal import Decimal, InvalidOperation
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.db.models import Q
 
-from .models import Produto, MovimentacaoEstoque
-from .forms import ProdutoForm, EntradaProdutoForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import EntradaProdutoForm, ProdutoForm
+from .models import MovimentacaoEstoque, Produto
 
 
 @login_required
@@ -25,7 +26,11 @@ def criar_produto(request):
         form = ProdutoForm(request.POST, request.FILES)
         if form.is_valid():
             ultimo_produto = Produto.objects.order_by('-codigo').first()
-            novo_codigo = str(int(ultimo_produto.codigo) + 1).zfill(6) if ultimo_produto else '000001'
+            novo_codigo = (
+                str(int(ultimo_produto.codigo) + 1).zfill(6)
+                if ultimo_produto
+                else '000001'
+            )
             produto = form.save(commit=False)
             produto.codigo = novo_codigo
             produto.usuario = request.user
@@ -33,7 +38,9 @@ def criar_produto(request):
             return redirect('produtos:entrada_produto')
     else:
         ultimo_produto = Produto.objects.order_by('-codigo').first()
-        novo_codigo = str(int(ultimo_produto.codigo) + 1).zfill(6) if ultimo_produto else '000001'
+        novo_codigo = (
+            str(int(ultimo_produto.codigo) + 1).zfill(6) if ultimo_produto else '000001'
+        )
         form = ProdutoForm(initial={'codigo': novo_codigo})
 
     return render(request, 'produtos/form_produto.html', {'form': form})
@@ -76,19 +83,25 @@ def entrada_produto(request):
                     Q(codigo__icontains=busca) | Q(nome__icontains=busca)
                 ).first()
                 if produto:
-                    form = EntradaProdutoForm(initial={
-                        'fornecedor': produto.fornecedor,
-                        'preco_custo': produto.preco_custo,
-                        'ativo': produto.ativo,
-                        'endereco_estoque': produto.endereco_estoque,
-                    })
+                    form = EntradaProdutoForm(
+                        initial={
+                            'fornecedor': produto.fornecedor,
+                            'preco_custo': produto.preco_custo,
+                            'ativo': produto.ativo,
+                            'endereco_estoque': produto.endereco_estoque,
+                        }
+                    )
                 else:
                     messages.error(request, "Produto não encontrado.")
 
-    return render(request, 'produtos/entrada_produto.html', {
-        'form': form,
-        'produto': produto,
-    })
+    return render(
+        request,
+        'produtos/entrada_produto.html',
+        {
+            'form': form,
+            'produto': produto,
+        },
+    )
 
 
 @login_required
@@ -110,11 +123,15 @@ def historico_individual(request):
                 produto=produto
             ).order_by('-data_movimentacao')
 
-    return render(request, 'produtos/historico_individual.html', {
-        'produto': produto,
-        'movimentacoes': movimentacoes,
-        'query': query,
-    })
+    return render(
+        request,
+        'produtos/historico_individual.html',
+        {
+            'produto': produto,
+            'movimentacoes': movimentacoes,
+            'query': query,
+        },
+    )
 
 
 @login_required
@@ -158,13 +175,13 @@ def relatorio_inventario(request):
 
                     # Mensagem atualizada com valores antigo e novo
                     messages.success(
-                        request, 
-                        f"Inventário de '{produto.nome}' ajustado de {quantidade_anterior} para {nova_quantidade}."
+                        request,
+                        f"Inventário de '{produto.nome}' ajustado de {quantidade_anterior} para {nova_quantidade}.",
                     )
                 else:
                     messages.info(
-                        request, 
-                        f"Quantidade de '{produto.nome}' já está em {nova_quantidade}. Nenhum ajuste necessário."
+                        request,
+                        f"Quantidade de '{produto.nome}' já está em {nova_quantidade}. Nenhum ajuste necessário.",
                     )
 
                 return redirect('produtos:relatorio_inventario')

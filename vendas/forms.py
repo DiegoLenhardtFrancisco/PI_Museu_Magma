@@ -1,8 +1,12 @@
-from django import forms
-from .models import Cliente, Venda, ItemVenda
-from produtos.models import Produto
-from django.forms import inlineformset_factory
 from decimal import Decimal
+
+from django import forms
+from django.forms import inlineformset_factory
+
+from produtos.models import Produto
+
+from .models import Cliente, ItemVenda, Venda
+
 
 class ClienteForm(forms.ModelForm):
     class Meta:
@@ -11,6 +15,7 @@ class ClienteForm(forms.ModelForm):
         widgets = {
             'observacoes': forms.Textarea(attrs={'rows': 3}),
         }
+
 
 class VendaForm(forms.ModelForm):
     class Meta:
@@ -21,19 +26,20 @@ class VendaForm(forms.ModelForm):
             'desconto': forms.NumberInput(attrs={'step': '0.01'}),
         }
 
+
 class ItemVendaForm(forms.ModelForm):
     produto = forms.ModelChoiceField(
         queryset=Produto.objects.filter(ativo=True),
         widget=forms.Select(attrs={'class': 'produto-select'}),
-        label=''
+        label='',
     )
-    
+
     quantidade = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
         min_value=Decimal('0.01'),
         widget=forms.NumberInput(attrs={'step': '0.01'}),
-        label=''
+        label='',
     )
 
     class Meta:
@@ -41,10 +47,7 @@ class ItemVendaForm(forms.ModelForm):
         fields = ['produto', 'quantidade']
         exclude = ('preco_unitario',)
 
+
 ItemVendaFormSet = inlineformset_factory(
-    Venda,
-    ItemVenda,
-    form=ItemVendaForm,
-    extra=5,
-    can_delete=False
+    Venda, ItemVenda, form=ItemVendaForm, extra=5, can_delete=False
 )
