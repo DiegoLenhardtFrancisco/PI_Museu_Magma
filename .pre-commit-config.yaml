@@ -1,0 +1,24 @@
+# Arquivo de configuração para o pre-commit
+# Define os hooks que serão executados antes de cada commit.
+
+repos:
+
+# Hook para o isort (ordena os imports)
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+        name: isort (python)
+
+# Hook para o black (formata o código)
+-   repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+    -   id: black
+
+# Hook para o flake8 (faz o linting)
+-   repo: https://github.com/pycqa/flake8
+    rev: 7.1.0
+    hooks:
+    -   id: flake8
+        exclude: /migrations/

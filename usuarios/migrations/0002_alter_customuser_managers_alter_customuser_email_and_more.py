@@ -13,8 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelManagers(
             name='customuser',
-            managers=[
-            ],
+            managers=[],
         ),
         migrations.AlterField(
             model_name='customuser',
@@ -24,11 +23,23 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='customuser',
             name='groups',
-            field=models.ManyToManyField(blank=True, related_name='customuser_set', related_query_name='customuser', to='auth.group', verbose_name='Grupos'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='customuser_set',
+                related_query_name='customuser',
+                to='auth.group',
+                verbose_name='Grupos',
+            ),
         ),
         migrations.AlterField(
             model_name='customuser',
             name='user_permissions',
-            field=models.ManyToManyField(blank=True, related_name='customuser_set', related_query_name='customuser', to='auth.permission', verbose_name='Permissões'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='customuser_set',
+                related_query_name='customuser',
+                to='auth.permission',
+                verbose_name='Permissões',
+            ),
         ),
     ]

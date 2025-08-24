@@ -18,7 +18,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='produto',
             name='categoria',
-            field=models.CharField(choices=[('FOSSIL', 'Fóssil'), ('ARTESANATO', 'Artesanato'), ('MINERAL', 'Mineral'), ('OUTRO', 'Outro')], max_length=50, null=True),
+            field=models.CharField(
+                choices=[
+                    ('FOSSIL', 'Fóssil'),
+                    ('ARTESANATO', 'Artesanato'),
+                    ('MINERAL', 'Mineral'),
+                    ('OUTRO', 'Outro'),
+                ],
+                max_length=50,
+                null=True,
+            ),
         ),
         migrations.DeleteModel(
             name='Fornecedor',

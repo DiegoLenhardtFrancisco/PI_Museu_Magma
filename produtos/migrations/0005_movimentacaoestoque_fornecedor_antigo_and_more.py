@@ -18,11 +18,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='movimentacaoestoque',
             name='preco_custo_antigo',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True),
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=10, null=True
+            ),
         ),
         migrations.AddField(
             model_name='movimentacaoestoque',
             name='quantidade_antiga',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True),
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=10, null=True
+            ),
         ),
     ]
