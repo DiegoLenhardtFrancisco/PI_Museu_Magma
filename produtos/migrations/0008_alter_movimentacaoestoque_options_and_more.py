@@ -12,7 +12,11 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='movimentacaoestoque',
-            options={'ordering': ['-data_movimentacao'], 'verbose_name': 'Movimentação de Estoque', 'verbose_name_plural': 'Movimentações de Estoque'},
+            options={
+                'ordering': ['-data_movimentacao'],
+                'verbose_name': 'Movimentação de Estoque',
+                'verbose_name_plural': 'Movimentações de Estoque',
+            },
         ),
         migrations.RenameField(
             model_name='movimentacaoestoque',
