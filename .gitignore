@@ -11,3 +11,6 @@ venv/
 
 # Configuração do VSCode
 .vscode/
+
+# Arquivo de variáveis de ambiente
+.env

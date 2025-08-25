@@ -1,12 +1,19 @@
 import os
 from pathlib import Path
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 # Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-lx6%n$(y-vsn6n1cmgf%t!_^yscr+3#=x-f@+o!rm8mlr$^xy1'
-DEBUG = True
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
 ALLOWED_HOSTS = []
 
 # Application definition (ORDEM CORRIGIDA)
@@ -92,3 +99,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model (CONFIGURAÇÃO ESSENCIAL)
 AUTH_USER_MODEL = 'usuarios.CustomUser'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
