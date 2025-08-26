@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Apps
+    'core.apps.CoreConfig',
     'produtos.apps.ProdutosConfig',
     'vendas.apps.VendasConfig',
 ]
@@ -105,5 +106,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 100,
+
+    'EXCEPTION_HANDLER': 'core.exception_handler.custom_exception_handler',
 }
