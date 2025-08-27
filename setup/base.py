@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
 
     # Apps
     'core.apps.CoreConfig',
@@ -109,4 +110,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
 
     'EXCEPTION_HANDLER': 'core.exception_handler.custom_exception_handler',
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+    ],
 }

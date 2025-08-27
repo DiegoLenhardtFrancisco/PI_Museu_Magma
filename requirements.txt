@@ -3,4 +3,4 @@ djangorestframework
 djangorestframework-simplejwt
 django-environ
 Pillow
-psycopg2-binary 
+django-filter

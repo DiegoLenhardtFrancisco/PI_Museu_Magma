@@ -11,6 +11,5 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # App-specific API URLs will be added here
-    # path('products/', include('produtos.api_urls')),
     path('', include('produtos.api_urls')),
 ]
