@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import HealthCheckView
 
@@ -12,4 +12,5 @@ urlpatterns = [
 
     # App-specific API URLs will be added here
     # path('products/', include('produtos.api_urls')),
+    path('', include('produtos.api_urls')),
 ]

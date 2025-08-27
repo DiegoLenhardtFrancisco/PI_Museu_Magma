@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
-from produtos.models import Produto
+from produtos.models import Product
 from usuarios.models import CustomUser
 
 
@@ -84,7 +84,7 @@ class Venda(models.Model):
 
 class ItemVenda(models.Model):
     venda = models.ForeignKey(Venda, related_name='itens', on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.PROTECT)
+    produto = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantidade = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))]
     )
@@ -98,4 +98,4 @@ class ItemVenda(models.Model):
         return self.quantidade * self.preco_unitario
 
     def __str__(self):
-        return f"{self.quantidade}x {self.produto.nome} @ {self.preco_unitario}"
+        return f"{self.quantidade}x {self.produto.name} @ {self.preco_unitario}"

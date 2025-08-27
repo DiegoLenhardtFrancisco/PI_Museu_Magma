@@ -6,7 +6,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render
 
-from produtos.models import Produto
+from produtos.models import Product
 
 from .models import ItemVenda, Venda
 
@@ -18,7 +18,7 @@ def venda_rapida(request):
     # Pesquisa de produtos
     query = request.GET.get('q', '')
     produtos = (
-        Produto.objects.filter(ativo=True, margem_lucro__isnull=False)
+        Product.objects.filter(ativo=True, margem_lucro__isnull=False)
         .exclude(margem_lucro=0)
         .order_by('nome')
     )
@@ -32,8 +32,8 @@ def venda_rapida(request):
     if 'adicionar' in request.GET:
         try:
             produto_id = request.GET['adicionar']
-            produto = Produto.objects.get(id=produto_id)
-            preco_venda = float(produto.preco_venda)  # Convertendo Decimal para float
+            produto = Product.objects.get(id=produto_id)
+            preco_venda = float(produto.sale_price)  # Convertendo Decimal para float
 
             item_existente = next(
                 (item for item in carrinho if item['produto_id'] == str(produto_id)),
@@ -49,7 +49,7 @@ def venda_rapida(request):
                 carrinho.append(
                     {
                         'produto_id': str(produto.id),
-                        'nome': produto.nome,
+                        'nome': produto.name,
                         'quantidade': 1,
                         'preco': preco_venda,
                         'subtotal': preco_venda,
@@ -57,7 +57,7 @@ def venda_rapida(request):
                 )
 
             request.session['carrinho'] = carrinho
-        except Produto.DoesNotExist:
+        except Product.DoesNotExist:
             messages.error(request, 'Produto não encontrado!')
         return redirect('vendas:venda_rapida')
 
@@ -78,9 +78,9 @@ def venda_rapida(request):
             # Calcular custo total
             custo_total = Decimal(0)
             for item in carrinho:
-                produto = Produto.objects.get(id=item['produto_id'])
+                produto = Product.objects.get(id=item['produto_id'])
                 quantidade = Decimal(str(item['quantidade']))
-                custo_total += produto.preco_custo * quantidade
+                custo_total += produto.cost_price * quantidade
 
             # Calcular margem
             margem_disponivel = total_bruto - custo_total
@@ -99,9 +99,9 @@ def venda_rapida(request):
 
             # Verificar estoque
             for item in carrinho:
-                produto = Produto.objects.get(id=item['produto_id'])
-                if produto.quantidade < Decimal(str(item['quantidade'])):
-                    messages.error(request, f"Estoque insuficiente: {produto.nome}")
+                produto = Product.objects.get(id=item['produto_id'])
+                if produto.quantity < Decimal(str(item['quantidade'])):
+                    messages.error(request, f"Estoque insuficiente: {produto.name}")
                     return redirect('vendas:venda_rapida')
 
             with transaction.atomic():
@@ -118,7 +118,7 @@ def venda_rapida(request):
 
                 # Criar itens
                 for item in carrinho:
-                    produto = Produto.objects.get(id=item['produto_id'])
+                    produto = Product.objects.get(id=item['produto_id'])
                     ItemVenda.objects.create(
                         venda=venda,
                         produto=produto,
@@ -127,7 +127,7 @@ def venda_rapida(request):
                     )
 
                     # Atualizar estoque
-                    produto.quantidade -= Decimal(str(item['quantidade']))
+                    produto.quantity -= Decimal(str(item['quantidade']))
                     produto.save()
 
                 # Limpar carrinho
@@ -135,7 +135,7 @@ def venda_rapida(request):
                 messages.success(request, f'Venda concluída: R$ {total_venda:.2f}')
                 return redirect('vendas:venda_rapida')
 
-        except (Produto.DoesNotExist, InvalidOperation, ValueError) as e:
+        except (Product.DoesNotExist, InvalidOperation, ValueError) as e:
             messages.error(request, f'Erro: {str(e)}')
             return redirect('vendas:venda_rapida')
 
@@ -144,7 +144,7 @@ def venda_rapida(request):
     custo_total = (
         float(
             sum(
-                Produto.objects.get(id=item['produto_id']).preco_custo
+                Product.objects.get(id=item['produto_id']).cost_price
                 * Decimal(str(item['quantidade']))
                 for item in carrinho
             )
