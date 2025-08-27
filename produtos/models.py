@@ -66,9 +66,10 @@ class Product(models.Model):
         Recalculates the selling price before saving, based on cost and margin.
         """
         if self.cost_price is not None and self.profit_margin is not None:
-            self.sale_price = self.cost_price * (
-                Decimal(1) + Decimal(self.profit_margin) / Decimal(100)
-            )
+            cost = Decimal(self.cost_price)
+            profit_margin_percent = Decimal(self.profit_margin) / Decimal(100)
+            self.sale_price = cost * (Decimal(1) + profit_margin_percent)
+        
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -108,8 +109,6 @@ class MovimentacaoEstoque(models.Model):
 
 
 # === SINAIS DE MODELO PARA RASTREAMENTO AUTOMÁTICO ===
-
-
 @receiver(pre_save, sender=Product)
 def capturar_valores_antes_alteracao(sender, instance, **kwargs):
     """
@@ -117,10 +116,10 @@ def capturar_valores_antes_alteracao(sender, instance, **kwargs):
     """
     if instance.pk:
         original = sender.objects.get(pk=instance.pk)
-        instance._original_quantidade = original.quantidade
-        instance._original_preco_custo = original.preco_custo
-        instance._original_fornecedor = original.fornecedor
-        instance._original_endereco = original.endereco_estoque
+        instance._original_quantidade = original.quantity
+        instance._original_preco_custo = original.cost_price
+        instance._original_fornecedor = original.supplier
+        instance._original_endereco = original.stock_location
 
 
 @receiver(post_save, sender=Product)
@@ -158,7 +157,7 @@ def create_stock_movement_after_update(sender, instance, created, **kwargs):
                 pass
         else:
             # Lógica original para outros tipos de alteração
-            if instance.quantidade != instance._original_quantidade:
+            if instance.quantity != instance._original_quantidade:
                 tipo = (
                     'E' if instance.quantidade > instance._original_quantidade else 'S'
                 )
