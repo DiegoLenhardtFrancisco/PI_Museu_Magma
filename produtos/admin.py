@@ -1,71 +1,37 @@
 from django.contrib import admin
 
-from .models import MovimentacaoEstoque, Produto
+from .models import MovimentacaoEstoque, Product
 
 
-@admin.register(Produto)
+@admin.register(Product)
 class ProdutoAdmin(admin.ModelAdmin):
     """
-    Administra a interface de administração para o modelo Produto.
+    Manages the administration interface for the Product model.
 
-    Exibe os principais campos em listagens, permite filtragem e
-    busca, e define campos como somente leitura para segurança.
+    Displays the main fields in lists, allows filtering and
+    searching, and sets fields as read-only for security.
     """
 
     list_display = [
-        'nome',
-        'codigo',
-        'preco_custo',
-        'margem_lucro',
-        'preco_venda',
-        'quantidade',
-        'unidade_medida',
-        'categoria',
-        'fornecedor',
-        'data_cadastro',
-        'ativo',
-        'usuario',
+        'name', 'code', 'cost_price', 'profit_margin', 'sale_price',
+        'quantity', 'unit_of_measure', 'category', 'supplier',
+        'created_at', 'is_active', 'user'
     ]
-    list_filter = ['unidade_medida', 'ativo', 'categoria']
-    search_fields = ['nome', 'codigo', 'fornecedor']
+    list_filter = ['unit_of_measure', 'is_active', 'category']
+    search_fields = ['name', 'code', 'supplier']
 
     readonly_fields = [
-        'nome',
-        'descricao',
-        'codigo',
-        'preco_custo',
-        'preco_venda',
-        'quantidade',
-        'unidade_medida',
-        'categoria',
-        'fornecedor',
-        'data_cadastro',
-        'data_validade',
-        'quantidade_minima',
-        'ativo',
-        'imagem',
-        'horario_atualizacao',
-        'usuario',
+        'name', 'description', 'code', 'cost_price', 'sale_price',
+        'quantity', 'unit_of_measure', 'category', 'supplier',
+        'created_at', 'expires_at', 'minimum_quantity',
+        'is_active', 'image', 'updated_at', 'user', 'stock_location'
     ]
 
     fields = [
-        'nome',
-        'descricao',
-        'codigo',
-        'preco_custo',
-        'margem_lucro',
-        'preco_venda',
-        'quantidade',
-        'unidade_medida',
-        'categoria',
-        'fornecedor',
-        'data_cadastro',
-        'data_validade',
-        'quantidade_minima',
-        'ativo',
-        'imagem',
-        'horario_atualizacao',
-        'usuario',
+        'name', 'description', 'code', 'cost_price', 'profit_margin', 'sale_price',
+        'quantity', 'unit_of_measure', 'category', 'supplier',
+        'created_at', 'expires_at', 'minimum_quantity',
+        'is_active', 'image', 'updated_at', 'user', 'stock_location'
     ]
 
     def save_model(self, request, obj, form, change):

@@ -6,82 +6,73 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
-class Categoria(models.Model):
+class Category(models.Model):
     """
-    Representa categorias fixas para classificação dos produtos.
+    Represents fixed categories for product classification.
     """
 
-    CATEGORIA_CHOICES = [
+    CATEGORY_CHOICES = [
         ('FOSSIL', 'Fóssil'),
-        ('ARTESANATO', 'Artesanato'),
+        ('ARTISANSHIP', 'Artesanato'),
         ('MINERAL', 'Mineral'),
-        ('OUTRO', 'Outro'),
+        ('OTHER', 'Outro'),
     ]
 
-    nome = models.CharField(max_length=100, choices=CATEGORIA_CHOICES, unique=True)
+    name = models.CharField(max_length=100, choices=CATEGORY_CHOICES, unique=True)
 
     def __str__(self):
-        return self.nome
+        return self.get_name_display()
 
 
-class Produto(models.Model):
+class Product(models.Model):
     """
-    Modelo principal para cadastro de produtos no sistema de estoque.
+    Main template for registering products in the inventory system.
     """
 
-    UNIDADE_CHOICES = [
-        ('UN', 'Unidade'),
+    UNIT_CHOICES = [
+        ('UNIT', 'Unidade'),
         ('KG', 'Quilograma'),
         ('LT', 'Litro'),
         ('MT', 'Metro'),
     ]
 
-    nome = models.CharField(max_length=100)
-    descricao = models.TextField(blank=True)
-    codigo = models.CharField(max_length=50, unique=True)
-
-    preco_custo = models.DecimalField(
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    code = models.CharField(max_length=50, unique=True)
+    cost_price = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(0)]
     )
-    margem_lucro = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-
-    preco_venda = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
-
-    quantidade = models.DecimalField(
+    profit_margin = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    quantity = models.DecimalField(
         max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)]
     )
-    unidade_medida = models.CharField(max_length=2, choices=UNIDADE_CHOICES)
-
-    categoria = models.CharField(
-        max_length=50, choices=Categoria.CATEGORIA_CHOICES, null=True
+    unit_of_measure = models.CharField(max_length=10, choices=UNIT_CHOICES)
+    category = models.CharField(
+        max_length=50, choices=Category.CATEGORY_CHOICES, null=True
     )
-    fornecedor = models.CharField(max_length=100, null=True)
-
-    data_cadastro = models.DateTimeField(auto_now_add=True)
-    data_validade = models.DateField(null=True, blank=True)
-    quantidade_minima = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    ativo = models.BooleanField(default=True)
-    imagem = models.ImageField(upload_to='produtos/', null=True, blank=True)
-    horario_atualizacao = models.DateTimeField(auto_now=True)
-    endereco_estoque = models.CharField(max_length=255, null=True, blank=True)
-
-    usuario = models.ForeignKey(
-        'usuarios.CustomUser', on_delete=models.SET_NULL, null=True
-    )
+    supplier = models.CharField(max_length=100, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateField(null=True, blank=True)
+    minimum_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    stock_location = models.CharField(max_length=255, null=True, blank=True)
+    user = models.ForeignKey('usuarios.CustomUser', on_delete=models.SET_NULL, null=True)
 
     def save(self, *args, **kwargs):
         """
-        Recalcula o preço de venda antes de salvar, baseado no custo e margem.
+        Recalculates the selling price before saving, based on cost and margin.
         """
-        if self.preco_custo is not None and self.margem_lucro is not None:
-            self.preco_venda = self.preco_custo * (
-                Decimal(1) + Decimal(self.margem_lucro) / Decimal(100)
+        if self.cost_price is not None and self.profit_margin is not None:
+            self.sale_price = self.cost_price * (
+                Decimal(1) + Decimal(self.profit_margin) / Decimal(100)
             )
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.nome} ({self.codigo})"
+        return f"{self.name} ({self.code})"
 
 
 class MovimentacaoEstoque(models.Model):
@@ -95,15 +86,13 @@ class MovimentacaoEstoque(models.Model):
         ('A', 'Ajuste'),
     ]
 
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    produto = models.ForeignKey(Product, on_delete=models.CASCADE)
     tipo = models.CharField(max_length=1, choices=TIPO_CHOICES)
     quantidade = models.DecimalField(max_digits=10, decimal_places=2)
     preco_custo = models.DecimalField(max_digits=10, decimal_places=2)
-
     fornecedor = models.CharField(max_length=100, null=True, blank=True)
     observacao = models.TextField(blank=True)
     endereco_estoque = models.CharField(max_length=255, null=True, blank=True)
-
     usuario = models.ForeignKey(
         'usuarios.CustomUser', on_delete=models.SET_NULL, null=True
     )
@@ -115,13 +104,13 @@ class MovimentacaoEstoque(models.Model):
         verbose_name_plural = 'Movimentações de Estoque'
 
     def __str__(self):
-        return f"{self.get_tipo_display()} - {self.produto.nome} ({self.data_movimentacao:%d/%m/%Y %H:%M})"
+        return f"{self.get_tipo_display()} - {self.produto.name} ({self.data_movimentacao:%d/%m/%Y %H:%M})"
 
 
 # === SINAIS DE MODELO PARA RASTREAMENTO AUTOMÁTICO ===
 
 
-@receiver(pre_save, sender=Produto)
+@receiver(pre_save, sender=Product)
 def capturar_valores_antes_alteracao(sender, instance, **kwargs):
     """
     Armazena os valores originais do produto antes de uma atualização, para comparação posterior.
@@ -134,22 +123,22 @@ def capturar_valores_antes_alteracao(sender, instance, **kwargs):
         instance._original_endereco = original.endereco_estoque
 
 
-@receiver(post_save, sender=Produto)
-def criar_movimentacao_apos_alteracao(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Product)
+def create_stock_movement_after_update(sender, instance, created, **kwargs):
     """
-    Cria automaticamente um registro de movimentação de estoque após criação ou alteração de um produto.
+    Automatically creates an inventory movement record after creating or changing a product.
     """
     if created:
-        # Cadastro inicial do produto
+        # Initial product registration
         MovimentacaoEstoque.objects.create(
             produto=instance,
             tipo='E',
-            quantidade=instance.quantidade,
-            preco_custo=instance.preco_custo,
-            fornecedor=instance.fornecedor,
-            observacao="Cadastro inicial do produto",
-            usuario=instance.usuario,
-            endereco_estoque=instance.endereco_estoque,
+            quantidade=instance.quantity,
+            preco_custo=instance.cost_price,
+            fornecedor=instance.supplier,
+            observacao="Initial product creation",
+            usuario=instance.user,
+            endereco_estoque=instance.stock_location,
         )
     elif hasattr(instance, '_original_quantidade'):
         observacoes = []

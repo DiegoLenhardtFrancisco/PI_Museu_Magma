@@ -3,7 +3,7 @@ from decimal import Decimal
 from django import forms
 from django.forms import inlineformset_factory
 
-from produtos.models import Produto
+from produtos.models import Product
 
 from .models import Cliente, ItemVenda, Venda
 
@@ -29,7 +29,7 @@ class VendaForm(forms.ModelForm):
 
 class ItemVendaForm(forms.ModelForm):
     produto = forms.ModelChoiceField(
-        queryset=Produto.objects.filter(ativo=True),
+        queryset=Product.objects.filter(ativo=True),
         widget=forms.Select(attrs={'class': 'produto-select'}),
         label='',
     )

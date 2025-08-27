@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from produtos.models import Produto
+from produtos.models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
     """
@@ -11,35 +11,17 @@ class ProductSerializer(serializers.ModelSerializer):
     unit_of_measure_display = serializers.CharField(source='get_unidade_medida_display', read_only=True)
 
     class Meta:
-        model = Produto
+        model = Product
         fields = [
-            'id',
-            'codigo',
-            'nome',
-            'descricao',
-            'preco_custo',
-            'margem_lucro',
-            'preco_venda',
-            'quantidade',
-            'unidade_medida',
+            'id', 'name', 'description', 'code', 'cost_price',
+            'profit_margin', 'sale_price', 'quantity',
+            'unit_of_measure',
             'unit_of_measure_display', 
-            'categoria',
-            'category_display',
-            'fornecedor',
-            'ativo',
-            'imagem',
-            'endereco_estoque',
-            'data_cadastro',
-            'horario_atualizacao',
-            'data_validade',
-            'quantidade_minima',
-
+            'category',
+            'category_display', 
+            'supplier', 'is_active', 'image', 'stock_location',
+            'created_at', 'updated_at', 'expires_at', 'minimum_quantity',
         ]
-
         read_only_fields = [
-            'id',
-            'codigo',
-            'preco_venda',
-            'data_cadastro',
-            'horario_atualizacao',
+            'id', 'code', 'sale_price', 'created_at', 'updated_at',
         ]
