@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from produtos.models import Product
+from produtos.models import StockMovement
 
 class ProductSerializer(serializers.ModelSerializer):
     """
@@ -24,4 +25,30 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'id', 'code', 'sale_price', 'created_at', 'updated_at',
+        ]
+
+class StockMovementSerializer(serializers.ModelSerializer):
+    """
+    Read-only serializer for the StockMovement model.
+    Provides detailed information for history logs.
+    """
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    user_name = serializers.CharField(source='user.username', read_only=True, default='Sistema')
+    type_display = serializers.CharField(source='get_type_display', read_only=True)
+
+    class Meta:
+        model = StockMovement
+        fields = [
+            'id',
+            'product',
+            'product_name',
+            'type',
+            'type_display',
+            'quantity',
+            'cost_price',
+            'supplier',
+            'notes',
+            'user',
+            'user_name',
+            'timestamp',
         ]

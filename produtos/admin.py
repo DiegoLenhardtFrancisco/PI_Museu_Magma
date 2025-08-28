@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MovimentacaoEstoque, Product
+from .models import StockMovement, Product
 
 
 @admin.register(Product)
@@ -39,34 +39,30 @@ class ProdutoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(MovimentacaoEstoque)
-class MovimentacaoEstoqueAdmin(admin.ModelAdmin):
+class StockMovementAdmin(admin.ModelAdmin):
     """
-    Administra a interface de administração para o modelo MovimentacaoEstoque.
-
-    Permite visualização detalhada das entradas e saídas de estoque.
+    Admin interface for the StockMovement model.
     """
-
     list_display = [
-        'produto',
-        'data_movimentacao',
-        'tipo',
-        'quantidade',
-        'preco_custo',
-        'usuario',
+        'product',
+        'timestamp',
+        'type',
+        'quantity',
+        'cost_price',
+        'user',
     ]
-    list_filter = ['tipo', 'data_movimentacao']
-    search_fields = ['produto__nome', 'produto__codigo']
-    date_hierarchy = 'data_movimentacao'
+    list_filter = ['type', 'timestamp']
+    search_fields = ['product__name', 'product__code'] 
+    date_hierarchy = 'timestamp'
 
     readonly_fields = [
-        'produto',
-        'tipo',
-        'quantidade',
-        'preco_custo',
-        'fornecedor',
-        'observacao',
-        'usuario',
-        'data_movimentacao',
-        'endereco_estoque',
+        'product',
+        'type',
+        'quantity',
+        'cost_price',
+        'supplier',
+        'notes',
+        'user',
+        'timestamp',
+        'stock_location',
     ]
