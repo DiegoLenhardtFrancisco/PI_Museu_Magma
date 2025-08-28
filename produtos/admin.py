@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MovimentacaoEstoque, Product
+from .models import StockMovement, Product
 
 
 @admin.register(Product)
@@ -39,7 +39,7 @@ class ProdutoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(MovimentacaoEstoque)
+@admin.register(StockMovement)
 class MovimentacaoEstoqueAdmin(admin.ModelAdmin):
     """
     Administra a interface de administração para o modelo MovimentacaoEstoque.

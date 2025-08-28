@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import EntradaProdutoForm, ProductForm
-from .models import MovimentacaoEstoque, Product
+from .models import StockMovement, Product
 
 
 @login_required
@@ -119,7 +119,7 @@ def historico_individual(request):
         ).first()
 
         if produto:
-            movimentacoes = MovimentacaoEstoque.objects.filter(
+            movimentacoes = StockMovement.objects.filter(
                 produto=produto
             ).order_by('-data_movimentacao')
 
