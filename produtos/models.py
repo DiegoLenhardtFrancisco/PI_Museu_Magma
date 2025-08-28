@@ -88,7 +88,7 @@ class StockMovement(models.Model):
     ]
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='movements')
-    type = models.CharField(max_length=1, choices=MOVEMENT_TYPE_CHOICES)
+    type = models.CharField(max_length=6, choices=MOVEMENT_TYPE_CHOICES)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     supplier = models.CharField(max_length=100, null=True, blank=True)
