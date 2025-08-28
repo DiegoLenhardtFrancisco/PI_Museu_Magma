@@ -159,20 +159,20 @@ def create_stock_movement_after_update(sender, instance, created, **kwargs):
             # Lógica original para outros tipos de alteração
             if instance.quantity != instance._original_quantidade:
                 tipo = (
-                    'E' if instance.quantidade > instance._original_quantidade else 'S'
+                    'E' if instance.quantity > instance._original_quantidade else 'S'
                 )
                 quantidade_diff = abs(
-                    instance.quantidade - instance._original_quantidade
+                    instance.quantity - instance._original_quantidade
                 )
                 observacoes.append(f"Quantidade alterada em {quantidade_diff}")
 
-            if instance.preco_custo != instance._original_preco_custo:
-                observacoes.append(f"Preço alterado para R$ {instance.preco_custo}")
+            if instance.cost_price != instance._original_preco_custo:
+                observacoes.append(f"Preço alterado para R$ {instance.cost_price}")
 
-            if instance.fornecedor != instance._original_fornecedor:
+            if instance.supplier != instance._original_fornecedor:
                 observacoes.append(f"Fornecedor alterado para {instance.fornecedor}")
 
-            if instance.endereco_estoque != instance._original_endereco:
+            if instance.stock_location != instance._original_endereco:
                 observacoes.append(
                     f"Endereço alterado para {instance.endereco_estoque}"
                 )
@@ -181,10 +181,10 @@ def create_stock_movement_after_update(sender, instance, created, **kwargs):
             MovimentacaoEstoque.objects.create(
                 produto=instance,
                 tipo=tipo,
-                quantidade=instance.quantidade,
-                preco_custo=instance.preco_custo,
-                fornecedor=instance.fornecedor,
+                quantidade=instance.quantity,
+                preco_custo=instance.cost_price,
+                fornecedor=instance.supplier,
                 observacao=". ".join(observacoes),
-                usuario=instance.usuario,
-                endereco_estoque=instance.endereco_estoque,
+                usuario=instance.user,
+                endereco_estoque=instance.stock_location,
             )

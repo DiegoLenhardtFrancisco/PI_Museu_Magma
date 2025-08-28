@@ -129,3 +129,42 @@ class ProductAPITests(APITestCase):
         url = reverse('product-list')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_product_with_invalid_data(self):
+        """
+        Ensure API returns 400 Bad Request for invalid data.
+        """
+        url = reverse('product-list')
+        data = {
+            "name": "",  # Invalid: empty name
+            "cost_price": "-50.00",  # Invalid: negative price
+            "profit_margin": "100.00",
+            "quantity": "20",
+            "unit_of_measure": "UNIT",
+            "category": "MINERAL"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Product.objects.count(), 2)
+        self.assertIn('name', response.data['errors']['detail'])
+        self.assertIn('cost_price', response.data['errors']['detail'])
+
+    def test_filter_product_by_category(self):
+        """
+        Ensure we can filter products by category.
+        """
+        url = f"{reverse('product-list')}?category=MINERAL"
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['name'], 'Ametista')
+
+    def test_search_product_by_name(self):
+        """
+        Ensure we can search products by name.
+        """
+        url = f"{reverse('product-list')}?search=Peixe"
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['name'], 'Fóssil de Peixe')
