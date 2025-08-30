@@ -1,6 +1,10 @@
-from rest_framework import viewsets, permissions
+from rest_framework import permissions, viewsets
+
 from produtos.models import Product
-from .api_serializers import ProductSerializer
+
+from .api_serializers import ProductSerializer, StockMovementSerializer
+from .models import StockMovement
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     """
@@ -22,3 +26,19 @@ class ProductViewSet(viewsets.ModelViewSet):
             next_code = '000001'
 
         serializer.save(user=self.request.user, code=next_code)
+
+
+class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    A read-only API endpoint for viewing stock movements.
+
+    Stock movements are created automatically by signals when products are
+    created or updated, so this endpoint does not allow creation or deletion.
+    """
+
+    queryset = StockMovement.objects.all().select_related('product', 'user')
+    serializer_class = StockMovementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    filterset_fields = ['product', 'type', 'user']
+    search_fields = ['product__name', 'user__username', 'notes']
