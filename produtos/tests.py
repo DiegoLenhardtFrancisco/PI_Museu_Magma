@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from usuarios.models import CustomUser
-from .models import Product
+from .models import Product, StockMovement
 
 class ProductAPITests(APITestCase):
     def setUp(self):
@@ -168,3 +168,64 @@ class ProductAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['name'], 'Fóssil de Peixe')
+
+class StockMovementAPITests(APITestCase):
+    def setUp(self):
+        """
+        Set up the test environment by creating a user and some products,
+        which will automatically generate stock movements via signals.
+        """
+        self.user = CustomUser.objects.create_user(
+            username='testuser', email='test@example.com', password='testpassword123'
+        )
+        self.client.force_authenticate(user=self.user)
+
+        self.product = Product.objects.create(
+            name="Turmalina", code="000003", cost_price="300.00",
+            profit_margin="50.00", quantity="20", unit_of_measure="UNIT",
+            category="MINERAL", user=self.user
+        )
+
+    def test_list_stock_movements(self):
+        """
+        Ensure we can list all stock movements.
+        """
+        url = reverse('stock-movement-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['product_name'], self.product.name)
+
+    def test_filter_stock_movements_by_type(self):
+        """
+        Ensure filtering by movement type works correctly.
+        """
+        self.product.quantity = 25
+        self.product.save()
+
+        url = f"{reverse('stock-movement-list')}?type=ENTRY"
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertIn("Quantidade alterada", response.data['results'][0]['notes'])
+
+    def test_cannot_create_stock_movement(self):
+        """
+        Ensure POST requests are not allowed.
+        """
+        url = reverse('stock-movement-list')
+        data = {"product": self.product.pk, "type": "ENTRY", "quantity": "10"}
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_cannot_delete_stock_movement(self):
+        """
+        Ensure DELETE requests are not allowed.
+        """
+        movement = StockMovement.objects.first()
+        url = reverse('stock-movement-detail', kwargs={'pk': movement.pk})
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
