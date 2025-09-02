@@ -7,13 +7,18 @@ class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    filterset_fields = ['customer_type']
+    search_fields = ['name', 'document', 'email']
+
 class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = SaleSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    filterset_fields = ['customer', 'status', 'payment_method', 'user']
+    search_fields = ['notes']
+
     def get_serializer_context(self):
-        # Passa o 'request' para o serializer para que possamos obter o 'user'
         return {'request': self.request}
 
 class SaleItemViewSet(viewsets.ReadOnlyModelViewSet):
