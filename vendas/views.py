@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 
 from produtos.models import Product
 
-from .models import ItemVenda, Venda
+from .models import SaleItem, Sale
 
 
 @login_required
@@ -20,12 +20,12 @@ def venda_rapida(request):
     produtos = (
         Product.objects.filter(ativo=True, margem_lucro__isnull=False)
         .exclude(margem_lucro=0)
-        .order_by('nome')
+        .order_by('name')
     )
 
     if query:
         produtos = produtos.filter(
-            Q(codigo__icontains=query) | Q(nome__icontains=query)
+            Q(code__icontains=query) | Q(name__icontains=query)
         )
 
     # Adicionar produto ao carrinho (corrigido)
@@ -106,7 +106,7 @@ def venda_rapida(request):
 
             with transaction.atomic():
                 # Criar venda
-                venda = Venda.objects.create(
+                venda = Sale.objects.create(
                     usuario=request.user,
                     forma_pagamento=request.POST['forma_pagamento'],
                     status='F',
@@ -162,6 +162,6 @@ def venda_rapida(request):
             'carrinho': carrinho,
             'total_bruto': total_bruto,
             'margem_disponivel': margem_disponivel,
-            'formas_pagamento': Venda.FORMA_PAGAMENTO_CHOICES,
+            'formas_pagamento': Sale.FORMA_PAGAMENTO_CHOICES,
         },
     )

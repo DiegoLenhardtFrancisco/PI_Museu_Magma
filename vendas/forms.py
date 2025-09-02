@@ -5,49 +5,41 @@ from django.forms import inlineformset_factory
 
 from produtos.models import Product
 
-from .models import Cliente, ItemVenda, Venda
+from .models import Customer, Sale, SaleItem
 
 
-class ClienteForm(forms.ModelForm):
+class CustomerForm(forms.ModelForm):
     class Meta:
-        model = Cliente
-        fields = ['nome', 'documento', 'tipo', 'email', 'telefone', 'observacoes']
+        model = Customer
+        fields = ['name', 'document', 'customer_type', 'email', 'phone', 'notes']
         widgets = {
-            'observacoes': forms.Textarea(attrs={'rows': 3}),
+            'notes': forms.Textarea(attrs={'rows': 3}),
         }
 
-
-class VendaForm(forms.ModelForm):
+class SaleForm(forms.ModelForm):
     class Meta:
-        model = Venda
-        fields = ['cliente', 'forma_pagamento', 'desconto', 'observacoes']
+        model = Sale
+        fields = ['customer', 'payment_method', 'discount', 'notes']
         widgets = {
-            'observacoes': forms.Textarea(attrs={'rows': 3}),
-            'desconto': forms.NumberInput(attrs={'step': '0.01'}),
+            'notes': forms.Textarea(attrs={'rows': 3}),
+            'discount': forms.NumberInput(attrs={'step': '0.01'}),
         }
 
-
-class ItemVendaForm(forms.ModelForm):
-    produto = forms.ModelChoiceField(
-        queryset=Product.objects.filter(ativo=True),
+class SaleItemForm(forms.ModelForm):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.filter(is_active=True),
         widget=forms.Select(attrs={'class': 'produto-select'}),
-        label='',
+        label=''
     )
-
-    quantidade = forms.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        min_value=Decimal('0.01'),
-        widget=forms.NumberInput(attrs={'step': '0.01'}),
-        label='',
+    quantity = forms.DecimalField(
+        max_digits=10, decimal_places=2, min_value=Decimal('0.01'),
+        widget=forms.NumberInput(attrs={'step': '0.01'}), label=''
     )
-
     class Meta:
-        model = ItemVenda
-        fields = ['produto', 'quantidade']
-        exclude = ('preco_unitario',)
+        model = SaleItem
+        fields = ['product', 'quantity']
+        exclude = ('unit_price',)
 
-
-ItemVendaFormSet = inlineformset_factory(
-    Venda, ItemVenda, form=ItemVendaForm, extra=5, can_delete=False
+ItemSaleFormSet = inlineformset_factory(
+    Sale, SaleItem, form=SaleItemForm, extra=5, can_delete=False
 )
