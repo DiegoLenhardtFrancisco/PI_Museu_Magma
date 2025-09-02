@@ -7,60 +7,56 @@ from produtos.models import Product
 from usuarios.models import CustomUser
 
 
-class Cliente(models.Model):
-    TIPO_CLIENTE_CHOICES = [
+class Customer(models.Model):
+    CUSTOMER_TYPE_CHOICES = [
         ('PF', 'Pessoa Física'),
         ('PJ', 'Pessoa Jurídica'),
     ]
 
-    nome = models.CharField(max_length=100)
-    documento = models.CharField(max_length=20, unique=True)
-    tipo = models.CharField(max_length=2, choices=TIPO_CLIENTE_CHOICES)
+    name = models.CharField(max_length=100)
+    document = models.CharField(max_length=20, unique=True)
+    customer_type = models.CharField(max_length=2, choices=CUSTOMER_TYPE_CHOICES)
     email = models.EmailField(blank=True)
-    telefone = models.CharField(max_length=20)
-    data_cadastro = models.DateTimeField(auto_now_add=True)
-    observacoes = models.TextField(blank=True)
+    phone = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['nome']
+        ordering = ['name']
         verbose_name = 'Cliente'
         verbose_name_plural = 'Clientes'
 
     def __str__(self):
-        return f"{self.nome} ({self.documento})"
+        return f"{self.name} ({self.document})"
 
 
-class Venda(models.Model):
+class Sale(models.Model):
     STATUS_CHOICES = [
-        ('A', 'Aberta'),
-        ('F', 'Finalizada'),
-        ('C', 'Cancelada'),
+        ('OPEN', 'Aberta'),
+        ('COMPLETED', 'Finalizada'),
+        ('CANCELLED', 'Cancelada'),
     ]
 
-    FORMA_PAGAMENTO_CHOICES = [
-        ('DI', 'Dinheiro'),
-        ('CD', 'Cartão Débito'),
-        ('CC', 'Cartão Crédito'),
-        ('PX', 'Pix'),
-        ('BO', 'Boleto'),
+    PAYMENT_METHOD_CHOICES = [
+        ('CASH', 'Dinheiro'),
+        ('DEBIT', 'Cartão Débito'),
+        ('CREDIT', 'Cartão Crédito'),
+        ('PIX', 'Pix'),
+        ('TICKET', 'Boleto'),
     ]
 
-    cliente = models.ForeignKey(
-        Cliente, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    usuario = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
-    data_venda = models.DateTimeField(auto_now_add=True)
-    forma_pagamento = models.CharField(max_length=2, choices=FORMA_PAGAMENTO_CHOICES)
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='A')
-    desconto = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)]
-    )
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    observacoes = models.TextField(blank=True)
-    custo_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    sale_date = models.DateTimeField(auto_now_add=True)
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='OPEN')
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    notes = models.TextField(blank=True)
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
-        ordering = ['-data_venda']
+        ordering = ['-sale_date']
         verbose_name = 'Venda'
         verbose_name_plural = 'Vendas'
 
@@ -68,34 +64,32 @@ class Venda(models.Model):
         total = sum(item.subtotal() for item in self.itens.all())
         return total - self.desconto
 
-    def atualizar_estoque(self, operacao='remover'):
+    def update_stock(self, operacao='remover'):
         with transaction.atomic():
             for item in self.itens.all():
-                produto = item.produto
+                product = item.product
                 if operacao == 'remover':
-                    produto.quantidade -= item.quantidade
+                    product.quantidade -= item.quantidade
                 else:
-                    produto.quantidade += item.quantidade
-                produto.save()
+                    product.quantidade += item.quantidade
+                product.save()
 
     def __str__(self):
-        return f"Venda #{self.id} - {self.data_venda.strftime('%d/%m/%Y')}"
+        return f"Sale #{self.id} - {self.sale_date.strftime('%d/%m/%Y')}"
 
 
-class ItemVenda(models.Model):
-    venda = models.ForeignKey(Venda, related_name='itens', on_delete=models.CASCADE)
-    produto = models.ForeignKey(Product, on_delete=models.PROTECT)
-    quantidade = models.DecimalField(
-        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))]
-    )
-    preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+class SaleItem(models.Model):
+    sale = models.ForeignKey(Sale, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         verbose_name = 'Item de Venda'
         verbose_name_plural = 'Itens de Venda'
 
     def subtotal(self):
-        return self.quantidade * self.preco_unitario
+        return self.quantity * self.unit_price
 
     def __str__(self):
-        return f"{self.quantidade}x {self.produto.name} @ {self.preco_unitario}"
+        return f"{self.quantity}x {self.product.name} @ {self.unit_price}"
