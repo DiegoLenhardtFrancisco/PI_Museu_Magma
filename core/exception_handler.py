@@ -10,16 +10,16 @@ def custom_exception_handler(exc, context):
     custom_response_data = {
         'errors': {
             'status_code': response.status_code,
-            'datail': None,
-            'code': response.data.get('code', None),
         }
     }
 
     if isinstance(response.data, dict):
-        detail = response.data.get('detail', response.data)
+        custom_response_data['errors']['detail'] = response.data.get('detail', response.data)
+        custom_response_data['errors']['code'] = response.data.get('code', 'invalid')
     else:
-        detail = response.data
+        custom_response_data['errors']['detail'] = response.data
+        custom_response_data['errors']['code'] = 'validation_error'
 
-    custom_response_data['errors']['detail'] = detail
+    custom_response = Response(custom_response_data, status=response.status_code)
 
     return Response(custom_response_data, status=response.status_code)

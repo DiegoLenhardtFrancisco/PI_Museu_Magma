@@ -54,6 +54,14 @@ class SaleSerializer(serializers.ModelSerializer):
             'notes', 'total_cost', 'items', 'items_to_create'
         ]
         read_only_fields = ['total_amount', 'total_cost', 'user', 'status']
+    
+    def validate_items_to_create(self, items_data):
+        """
+        Check if the list of items to be sold is empty.
+        """
+        if not items_data:
+            raise serializers.ValidationError("A venda deve ter pelo menos um item.")
+        return items_data
 
     def create(self, validated_data):
         items_data = validated_data.pop('items_to_create', [])
