@@ -13,4 +13,5 @@ urlpatterns = [
     # App-specific API URLs will be added here
     path('', include('produtos.api_urls')),
     path('', include('vendas.api_urls')), 
+    path('', include('usuarios.api_urls')),
 ]
