@@ -11,6 +11,10 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all().order_by('-date_joined')
     permission_classes = [IsAdminOrIsSelf]
 
+    filterset_fields = ['user_type', 'is_active']
+
+    search_fields = ['username', 'email', 'first_name', 'last_name']
+
     def get_serializer_class(self):
         """
         Return the appropriate serializer class based on the request action.
