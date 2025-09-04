@@ -11,18 +11,18 @@ class CustomUserAdmin(UserAdmin):
         'email',
         'first_name',
         'last_name',
-        'tipo_usuario',
+        'user_type',
         'is_staff',
     )
 
     # Campos exibidos ao editar um usuário
     fieldsets = UserAdmin.fieldsets + (
-        ('Tipo de Usuário', {'fields': ('tipo_usuario',)}),
+        ('User Type', {'fields': ('user_type',)}),
     )
 
     # Campos exibidos ao criar um usuário (incluindo superusuário)
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Tipo de Usuário', {'fields': ('tipo_usuario',)}),
+        ('User Type', {'fields': ('user_type',)}),
     )
 
 

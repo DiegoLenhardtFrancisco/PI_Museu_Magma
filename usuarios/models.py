@@ -15,37 +15,27 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, username, email, password=None, **extra_fields):
-        extra_fields.setdefault(
-            'tipo_usuario', 'ADMIN'
-        )  # Força ADMIN para superusuários
+        extra_fields.setdefault('user_type', 'ADMIN') 
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, email, password, **extra_fields)
 
 
 class CustomUser(AbstractUser):
-    TIPO_USUARIO_CHOICES = [
+    USER_TYPE_CHOICES = [
         ('ADMIN', 'Administrador'),
-        ('VENDEDOR', 'Vendedor'),
-        ('ESTOQUISTA', 'Estoquista'),
+        ('SELLER', 'Vendedor'),
+        ('STOCKCLERK', 'Estoquista'),
     ]
 
-    tipo_usuario = models.CharField(
-        max_length=10, choices=TIPO_USUARIO_CHOICES, default='VENDEDOR'
+    user_type = models.CharField(
+        max_length=10, choices=USER_TYPE_CHOICES, default='SELLER'
     )
-
-    # Email como campo obrigatório e único
     email = models.EmailField(unique=True)
-
-    # 💰 Campo de saldo
-    saldo = models.DecimalField(
+    balance = models.DecimalField(
         max_digits=10, decimal_places=2, default=Decimal('0.00')
     )
-
-    # Substitui o manager padrão
     objects = CustomUserManager()
-
-    # Related names personalizados para evitar conflitos
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='customuser_set',
@@ -62,7 +52,6 @@ class CustomUser(AbstractUser):
         verbose_name='Permissões',
     )
 
-    # Campos obrigatórios para o createsuperuser
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['email']
