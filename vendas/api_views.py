@@ -20,6 +20,12 @@ class SaleViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         return {'request': self.request}
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user, code=next_code) 
+
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)
 
 class SaleItemViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SaleItem.objects.all()

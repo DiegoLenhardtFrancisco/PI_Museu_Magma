@@ -1,7 +1,10 @@
 from django.contrib import admin
 
-from .models import StockMovement, Product
+from .models import Product, StockMovement, Category
 
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'created_at', 'created_by']
 
 @admin.register(Product)
 class ProdutoAdmin(admin.ModelAdmin):
@@ -15,16 +18,17 @@ class ProdutoAdmin(admin.ModelAdmin):
     list_display = [
         'name', 'code', 'cost_price', 'profit_margin', 'sale_price',
         'quantity', 'unit_of_measure', 'category', 'supplier',
-        'created_at', 'is_active', 'user'
+        'created_at', 'is_active', 'created_by'
     ]
     list_filter = ['unit_of_measure', 'is_active', 'category']
     search_fields = ['name', 'code', 'supplier']
 
     readonly_fields = [
+        'updated_by',
         'name', 'description', 'code', 'cost_price', 'sale_price',
         'quantity', 'unit_of_measure', 'category', 'supplier',
         'created_at', 'expires_at', 'minimum_quantity',
-        'is_active', 'image', 'updated_at', 'user', 'stock_location'
+        'is_active', 'image', 'updated_at', 'created_by', 'stock_location'
     ]
 
     fields = [

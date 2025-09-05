@@ -5,9 +5,10 @@ from django.db import models, transaction
 
 from produtos.models import Product
 from usuarios.models import CustomUser
+from core.models import AuditModel
 
 
-class Customer(models.Model):
+class Customer(AuditModel, models.Model):
     CUSTOMER_TYPE_CHOICES = [
         ('PF', 'Pessoa Física'),
         ('PJ', 'Pessoa Jurídica'),
@@ -18,8 +19,8 @@ class Customer(models.Model):
     customer_type = models.CharField(max_length=2, choices=CUSTOMER_TYPE_CHOICES)
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(blank=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['name']
@@ -30,7 +31,7 @@ class Customer(models.Model):
         return f"{self.name} ({self.document})"
 
 
-class Sale(models.Model):
+class Sale(AuditModel, models.Model):
     STATUS_CHOICES = [
         ('OPEN', 'Aberta'),
         ('COMPLETED', 'Finalizada'),
@@ -46,7 +47,6 @@ class Sale(models.Model):
     ]
 
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     sale_date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='OPEN')
@@ -54,6 +54,8 @@ class Sale(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     notes = models.TextField(blank=True)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    # sale_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-sale_date']

@@ -4,9 +4,10 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from core.models import AuditModel
 
 
-class Category(models.Model):
+class Category(AuditModel, models.Model):
     """
     Represents fixed categories for product classification.
     """
@@ -24,7 +25,7 @@ class Category(models.Model):
         return self.get_name_display()
 
 
-class Product(models.Model):
+class Product(AuditModel, models.Model):
     """
     Main template for registering products in the inventory system.
     """
@@ -52,14 +53,14 @@ class Product(models.Model):
         max_length=50, choices=Category.CATEGORY_CHOICES, null=True
     )
     supplier = models.CharField(max_length=100, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateField(null=True, blank=True)
     minimum_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+    # user = models.ForeignKey('usuarios.CustomUser', on_delete=models.SET_NULL, null=True)
     stock_location = models.CharField(max_length=255, null=True, blank=True)
-    user = models.ForeignKey('usuarios.CustomUser', on_delete=models.SET_NULL, null=True)
 
     def save(self, *args, **kwargs):
         """

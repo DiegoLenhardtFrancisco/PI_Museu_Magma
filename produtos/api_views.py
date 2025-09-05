@@ -25,7 +25,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             next_code = '000001'
 
-        serializer.save(user=self.request.user, code=next_code)
+        serializer.save(created_by=self.request.user, code=next_code)
+    
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)
 
 
 class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
