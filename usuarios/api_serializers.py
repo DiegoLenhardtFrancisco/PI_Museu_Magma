@@ -29,6 +29,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'username', 'password', 'email', 'first_name', 'last_name', 'user_type'
         ]
 
+        extra_kwargs = {
+            'first_name': {'required': False, 'allow_blank': True},
+            'last_name': {'required': False, 'allow_blank': True},
+        }
+
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
             username=validated_data['username'],
