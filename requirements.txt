@@ -4,3 +4,4 @@ djangorestframework-simplejwt
 django-environ
 Pillow
 django-filter
+structlog

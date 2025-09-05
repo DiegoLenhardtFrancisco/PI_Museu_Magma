@@ -23,6 +23,9 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return UserCreateSerializer
         return UserSerializer
-    
-    def CustomTokenObtainPairView(TokenObtainPairView):
-        throttle_scope = 'login'
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """
+    Custom view for the token endpoint to apply a specific throttle scope.
+    """
+    throttle_scope = 'login'
