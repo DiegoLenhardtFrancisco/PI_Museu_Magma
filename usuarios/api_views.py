@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions
 from .models import CustomUser
 from .api_serializers import UserSerializer, UserCreateSerializer
 from .api_permissions import IsAdminOrIsSelf
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -22,3 +23,6 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return UserCreateSerializer
         return UserSerializer
+    
+    def CustomTokenObtainPairView(TokenObtainPairView):
+        throttle_scope = 'login'
