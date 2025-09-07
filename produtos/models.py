@@ -5,8 +5,10 @@ from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
+from core.models import AuditModel
 
-class Category(models.Model):
+
+class Category(AuditModel, models.Model):
     """
     Represents fixed categories for product classification.
     """
@@ -24,7 +26,7 @@ class Category(models.Model):
         return self.get_name_display()
 
 
-class Product(models.Model):
+class Product(AuditModel, models.Model):
     """
     Main template for registering products in the inventory system.
     """
@@ -52,14 +54,11 @@ class Product(models.Model):
         max_length=50, choices=Category.CATEGORY_CHOICES, null=True
     )
     supplier = models.CharField(max_length=100, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateField(null=True, blank=True)
     minimum_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
     stock_location = models.CharField(max_length=255, null=True, blank=True)
-    user = models.ForeignKey('usuarios.CustomUser', on_delete=models.SET_NULL, null=True)
 
     def save(self, *args, **kwargs):
         """
@@ -69,7 +68,7 @@ class Product(models.Model):
             cost = Decimal(self.cost_price)
             profit_margin_percent = Decimal(self.profit_margin) / Decimal(100)
             self.sale_price = cost * (Decimal(1) + profit_margin_percent)
-        
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -87,16 +86,16 @@ class StockMovement(models.Model):
         ('ADJUST', 'Ajuste'),
     ]
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='movements')
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='movements'
+    )
     type = models.CharField(max_length=6, choices=MOVEMENT_TYPE_CHOICES)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     supplier = models.CharField(max_length=100, null=True, blank=True)
     notes = models.TextField(blank=True)
     stock_location = models.CharField(max_length=255, null=True, blank=True)
-    user = models.ForeignKey(
-        'usuarios.CustomUser', on_delete=models.SET_NULL, null=True
-    )
+    user = models.ForeignKey('usuarios.CustomUser', on_delete=models.SET_NULL, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -105,10 +104,14 @@ class StockMovement(models.Model):
         verbose_name_plural = 'Movimentações de Estoque'
 
     def __str__(self):
-        return f"{self.get_type_display()} - {self.product.name} ({self.timestamp:%d/%m/%Y %H:%M})"
+        return (
+            f"{self.get_type_display()} - "
+            f"{self.product.name} ({self.timestamp:%d/%m/%Y %H:%M})"
+        )
 
 
 # === MODEL SIGNALS FOR AUTOMATIC TRACKING (FULLY TRANSLATED) ===
+
 
 @receiver(pre_save, sender=Product)
 def capture_values_before_update(sender, instance, **kwargs):
@@ -126,17 +129,20 @@ def capture_values_before_update(sender, instance, **kwargs):
 @receiver(post_save, sender=Product)
 def create_stock_movement_after_update(sender, instance, created, **kwargs):
     """
-    Automatically creates an inventory movement record after creating or changing a product.
+    Automatically creates an inventory movement
+    record after creating or changing a product.
     """
+    user_who_changed = instance.updated_by or instance.created_by
+
     if created:
         StockMovement.objects.create(
             product=instance,
-            type='E',
+            type='ENTRY',
             quantity=instance.quantity,
             cost_price=instance.cost_price,
             supplier=instance.supplier,
             notes="Initial product creation",
-            user=instance.user,
+            user=user_who_changed,
             stock_location=instance.stock_location,
         )
     elif hasattr(instance, '_original_quantity'):
@@ -144,7 +150,9 @@ def create_stock_movement_after_update(sender, instance, created, **kwargs):
         movement_type = 'ADJUST'
 
         if instance.quantity != instance._original_quantity:
-            movement_type = 'ENTRY' if instance.quantity > instance._original_quantity else 'SALE'
+            movement_type = (
+                'ENTRY' if instance.quantity > instance._original_quantity else 'SALE'
+            )
             quantity_diff = abs(instance.quantity - instance._original_quantity)
             notes.append(f"Quantidade alterada em {quantity_diff}")
 
@@ -158,13 +166,14 @@ def create_stock_movement_after_update(sender, instance, created, **kwargs):
             notes.append(f"Localização alterada para {instance.stock_location}")
 
         if notes:
+            user_who_changed = instance.updated_by or instance.created_by
             StockMovement.objects.create(
                 product=instance,
                 type=movement_type,
-                quantity=instance.quantity, # Salva a quantidade final do produto
+                quantity=instance.quantity,
                 cost_price=instance.cost_price,
                 supplier=instance.supplier,
-                notes=". ".join(notes), # Nota para o usuário
-                user=instance.user,
+                notes=". ".join(notes),
+                user=user_who_changed,
                 stock_location=instance.stock_location,
             )

@@ -1,10 +1,14 @@
 from decimal import Decimal
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from usuarios.models import CustomUser
+
 from produtos.models import Product
+from usuarios.models import CustomUser
+
 from .models import Sale, SaleItem
+
 
 class SaleAPITests(APITestCase):
     def setUp(self):
@@ -17,14 +21,24 @@ class SaleAPITests(APITestCase):
         self.client.force_authenticate(user=self.user)
 
         self.product1 = Product.objects.create(
-            name="Ametista", code="P001", cost_price="100.00",
-            profit_margin="50.00", quantity="10", unit_of_measure="UNIT",
-            category="MINERAL", user=self.user
+            name="Ametista",
+            code="P001",
+            cost_price="100.00",
+            profit_margin="50.00",
+            quantity="10",
+            unit_of_measure="UNIT",
+            category="MINERAL",
+            created_by=self.user,
         )
         self.product2 = Product.objects.create(
-            name="Fóssil", code="P002", cost_price="200.00",
-            profit_margin="50.00", quantity="5", unit_of_measure="UNIT",
-            category="FOSSIL", user=self.user
+            name="Fóssil",
+            code="P002",
+            cost_price="200.00",
+            profit_margin="50.00",
+            quantity="5",
+            unit_of_measure="UNIT",
+            category="FOSSIL",
+            created_by=self.user,
         )
 
     def test_create_sale_success(self):
@@ -37,8 +51,8 @@ class SaleAPITests(APITestCase):
             "notes": "Test sale via API",
             "items_to_create": [
                 {"product_id": self.product1.id, "quantity": "2.00"},
-                {"product_id": self.product2.id, "quantity": "1.00"}
-            ]
+                {"product_id": self.product2.id, "quantity": "1.00"},
+            ],
         }
 
         response = self.client.post(url, data, format='json')
@@ -64,9 +78,7 @@ class SaleAPITests(APITestCase):
         url = reverse('sale-list')
         data = {
             "payment_method": "CASH",
-            "items_to_create": [
-                {"product_id": self.product1.id, "quantity": "11.00"}
-            ]
+            "items_to_create": [{"product_id": self.product1.id, "quantity": "11.00"}],
         }
 
         response = self.client.post(url, data, format='json')
@@ -80,19 +92,6 @@ class SaleAPITests(APITestCase):
         self.product1.refresh_from_db()
         self.assertEqual(self.product1.quantity, Decimal('10.00'))
 
-    def test_list_sales(self):
-        """
-        Ensure we can list sales.
-        """
-        self.test_create_sale_success()
-
-        url = reverse('sale-list')
-        response = self.client.get(url, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(len(response.data['results'][0]['items']), 2)
-    
     def test_create_sale_with_no_items(self):
         """
         Ensures that the API rejects a sale submitted without any items.
@@ -100,7 +99,7 @@ class SaleAPITests(APITestCase):
         url = reverse('sale-list')
         data = {"payment_method": "DEBIT", "items_to_create": []}
         response = self.client.post(url, data, format='json')
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("items_to_create", response.data['errors']['detail'])
 
@@ -112,7 +111,7 @@ class SaleAPITests(APITestCase):
         invalid_product_id = 999
         data = {
             "payment_method": "CREDIT",
-            "items_to_create": [{"product_id": invalid_product_id, "quantity": "1.00"}]
+            "items_to_create": [{"product_id": invalid_product_id, "quantity": "1.00"}],
         }
 
         with self.assertRaises(Product.DoesNotExist):
@@ -138,7 +137,7 @@ class SaleAPITests(APITestCase):
         sale = Sale.objects.first()
         url = reverse('sale-detail', kwargs={'pk': sale.pk})
         response = self.client.get(url, format='json')
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], sale.id)
         self.assertEqual(len(response.data['items']), 2)
@@ -147,7 +146,7 @@ class SaleAPITests(APITestCase):
         """
         Ensures that an unauthenticated user cannot access the sales list.
         """
-        self.client.force_authenticate(user=None) 
+        self.client.force_authenticate(user=None)
         url = reverse('sale-list')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

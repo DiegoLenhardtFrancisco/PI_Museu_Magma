@@ -1,9 +1,13 @@
 from decimal import Decimal
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+
 from usuarios.models import CustomUser
+
 from .models import Product, StockMovement
+
 
 class ProductAPITests(APITestCase):
     def setUp(self):
@@ -12,12 +16,10 @@ class ProductAPITests(APITestCase):
         We'll create a user and authenticate them.
         """
         self.user = CustomUser.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpassword123'
+            username='testuser', email='test@example.com', password='testpassword123'
         )
         self.client.force_authenticate(user=self.user)
-        
+
         self.product1 = Product.objects.create(
             name="Ametista",
             code="000001",
@@ -26,7 +28,7 @@ class ProductAPITests(APITestCase):
             quantity="10",
             unit_of_measure="UNIT",
             category="MINERAL",
-            user=self.user
+            created_by=self.user,
         )
         self.product2 = Product.objects.create(
             name="Fóssil de Peixe",
@@ -36,7 +38,7 @@ class ProductAPITests(APITestCase):
             quantity="5",
             unit_of_measure="UNIT",
             category="FOSSIL",
-            user=self.user
+            created_by=self.user,
         )
 
     def test_list_products(self):
@@ -68,7 +70,7 @@ class ProductAPITests(APITestCase):
             "profit_margin": "100.00",
             "quantity": "20",
             "unit_of_measure": "UNIT",
-            "category": "MINERAL"
+            "category": "MINERAL",
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -83,16 +85,16 @@ class ProductAPITests(APITestCase):
         # For PUT, you usually need to send the full object
         data = {
             "name": "Ametista Polida",
-            "cost_price": "120.00", # New price
+            "cost_price": "120.00",  # New price
             "profit_margin": "60.00",
-            "quantity": "8", # Updated quantity
+            "quantity": "8",  # Updated quantity
             "unit_of_measure": "UNIT",
-            "category": "MINERAL"
+            "category": "MINERAL",
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], 'Ametista Polida')
-        
+
         # Refresh the object from the database to check the update
         self.product1.refresh_from_db()
         self.assertEqual(self.product1.quantity, Decimal('8.00'))
@@ -108,7 +110,7 @@ class ProductAPITests(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         self.product2.refresh_from_db()
         self.assertEqual(self.product2.quantity, Decimal('3.00'))
 
@@ -141,7 +143,7 @@ class ProductAPITests(APITestCase):
             "profit_margin": "100.00",
             "quantity": "20",
             "unit_of_measure": "UNIT",
-            "category": "MINERAL"
+            "category": "MINERAL",
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -169,6 +171,7 @@ class ProductAPITests(APITestCase):
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['name'], 'Fóssil de Peixe')
 
+
 class StockMovementAPITests(APITestCase):
     def setUp(self):
         """
@@ -181,9 +184,14 @@ class StockMovementAPITests(APITestCase):
         self.client.force_authenticate(user=self.user)
 
         self.product = Product.objects.create(
-            name="Turmalina", code="000003", cost_price="300.00",
-            profit_margin="50.00", quantity="20", unit_of_measure="UNIT",
-            category="MINERAL", user=self.user
+            name="Turmalina",
+            code="000003",
+            cost_price="300.00",
+            profit_margin="50.00",
+            quantity="20",
+            unit_of_measure="UNIT",
+            category="MINERAL",
+            user=self.user,
         )
 
     def test_list_stock_movements(self):
