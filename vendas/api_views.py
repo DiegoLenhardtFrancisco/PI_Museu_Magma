@@ -3,7 +3,9 @@ from rest_framework import permissions, viewsets
 from .api_serializers import CustomerSerializer, SaleItemReadSerializer, SaleSerializer
 from .models import Customer, Sale, SaleItem
 from usuarios.api_permissions import IsAdminOrSaleOwner
+from drf_spectacular.utils import extend_schema
 
+@extend_schema(tags=['Clientes'])
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
@@ -12,7 +14,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     filterset_fields = ['customer_type']
     search_fields = ['name', 'document', 'email']
 
-
+@extend_schema(tags=['Vendas'])
 class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = SaleSerializer
@@ -40,7 +42,7 @@ class SaleViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(updated_by=self.request.user)
 
-
+@extend_schema(tags=['Vendas'])
 class SaleItemViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SaleItem.objects.all()
     serializer_class = SaleItemReadSerializer

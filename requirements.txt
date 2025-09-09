@@ -5,3 +5,4 @@ django-environ
 Pillow
 django-filter
 structlog
+drf-spectacular
