@@ -4,6 +4,7 @@ from produtos.models import Product
 
 from .api_serializers import ProductSerializer, StockMovementSerializer
 from .models import StockMovement
+from usuarios.api_permissions import IsAdminOrStocker 
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -13,7 +14,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     queryset = Product.objects.filter(is_active=True).order_by('name')
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrStocker]
 
     filterset_fields = ['category', 'supplier', 'is_active']
     search_fields = ['name', 'description', 'code']

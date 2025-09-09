@@ -150,3 +150,38 @@ class SaleAPITests(APITestCase):
         url = reverse('sale-list')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_seller_cannot_see_other_sellers_sale(self):
+        """
+        Ensures that a salesperson cannot view or edit another salesperson's sale.
+        """
+        self.test_create_sale_success()
+        sale = Sale.objects.first()
+
+        other_seller = CustomUser.objects.create_user(
+            username='otherseller', email='other@seller.com', password='password123'
+        )
+        self.client.force_authenticate(user=other_seller)
+
+        url = reverse('sale-detail', kwargs={'pk': sale.pk})
+        response = self.client.get(url, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_admin_can_see_any_sale(self):
+        """
+        Ensures that an administrator can view the sales of any salesperson.
+        """
+        self.test_create_sale_success()
+        sale = Sale.objects.first()
+        
+        admin_user = CustomUser.objects.create_superuser(
+            username='admin', email='admin@test.com', password='password123'
+        )
+        self.client.force_authenticate(user=admin_user)
+    
+        url = reverse('sale-detail', kwargs={'pk': sale.pk})
+        response = self.client.get(url, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], sale.id)
