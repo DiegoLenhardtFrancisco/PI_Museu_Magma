@@ -2,7 +2,7 @@ from rest_framework import permissions, viewsets
 
 from .api_serializers import CustomerSerializer, SaleItemReadSerializer, SaleSerializer
 from .models import Customer, Sale, SaleItem
-
+from usuarios.api_permissions import IsAdminOrSaleOwner
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -16,10 +16,20 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = SaleSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrSaleOwner]
 
-    filterset_fields = ['customer', 'status', 'payment_method', 'user']
+    filterset_fields = ['customer', 'status', 'payment_method', 'created_by']
     search_fields = ['notes']
+
+    def get_queryset(self):
+        """
+        Admins see all sales.
+        Other users (Sellers) only see their own sales.
+        """
+        user = self.request.user
+        if user.is_staff or user.user_type == 'ADMIN':
+            return Sale.objects.all()
+        return Sale.objects.filter(created_by=user)
 
     def get_serializer_context(self):
         return {'request': self.request}

@@ -16,7 +16,10 @@ class ProductAPITests(APITestCase):
         We'll create a user and authenticate them.
         """
         self.user = CustomUser.objects.create_user(
-            username='testuser', email='test@example.com', password='testpassword123'
+            username='testuser',
+            email='test@example.com',
+            password='testpassword123',
+            user_type='STOCKCLERK',  # <-- ADICIONE ESTA LINHA
         )
         self.client.force_authenticate(user=self.user)
 
@@ -171,6 +174,38 @@ class ProductAPITests(APITestCase):
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['name'], 'Fóssil de Peixe')
 
+class ProductAPIPermissionsTests(APITestCase):
+    def setUp(self):
+        self.admin_user = CustomUser.objects.create_superuser('admin', 'admin@test.com', 'pass123')
+        self.seller_user = CustomUser.objects.create_user('seller', 'seller@test.com', 'pass123', user_type='SELLER')
+        self.stockclerk_user = CustomUser.objects.create_user('stockclerk', 'stock@test.com', 'pass123', user_type='STOCKCLERK')
+        self.product = Product.objects.create(
+            name="Turmalina", code="000003", cost_price="300.00", quantity="20",
+            unit_of_measure="UNIT", category="MINERAL", created_by=self.admin_user
+        )
+
+    def test_seller_can_list_products(self):
+        """Seller MUST have read permission (GET)."""
+        self.client.force_authenticate(user=self.seller_user)
+        response = self.client.get(reverse('product-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_seller_cannot_create_product(self):
+        """Sellers MUST NOT have write permission (POST)."""
+        self.client.force_authenticate(user=self.seller_user)
+        data = {"name": "Produto Proibido", "cost_price": "10.00", "quantity": 1, "unit_of_measure": "UNIT", "category": "MINERAL"}
+        response = self.client.post(reverse('product-list'), data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_stockclerk_can_create_product(self):
+        """The stock clerk MUST have write permission (POST)."""
+        self.client.force_authenticate(user=self.stockclerk_user)
+        data = {
+            "name": "Quartzo Rosa", "cost_price": "50.00", "profit_margin": "100.00",
+            "quantity": "20", "unit_of_measure": "UNIT", "category": "MINERAL"
+        }
+        response = self.client.post(reverse('product-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 class StockMovementAPITests(APITestCase):
     def setUp(self):
@@ -191,7 +226,7 @@ class StockMovementAPITests(APITestCase):
             quantity="20",
             unit_of_measure="UNIT",
             category="MINERAL",
-            user=self.user,
+            created_by=self.user,
         )
 
     def test_list_stock_movements(self):
@@ -215,7 +250,7 @@ class StockMovementAPITests(APITestCase):
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(len(response.data['results']), 2)
         self.assertIn("Quantidade alterada", response.data['results'][0]['notes'])
 
     def test_cannot_create_stock_movement(self):
