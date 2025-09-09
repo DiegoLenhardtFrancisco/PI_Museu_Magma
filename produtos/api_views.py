@@ -5,8 +5,9 @@ from produtos.models import Product
 from .api_serializers import ProductSerializer, StockMovementSerializer
 from .models import StockMovement
 from usuarios.api_permissions import IsAdminOrStocker 
+from drf_spectacular.utils import extend_schema
 
-
+@extend_schema(tags=['Produtos'])
 class ProductViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows products to be viewed or edited.
@@ -33,7 +34,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(updated_by=self.request.user)
 
-
+@extend_schema(tags=['Produtos'])
 class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
     """
     A read-only API endpoint for viewing stock movements.
