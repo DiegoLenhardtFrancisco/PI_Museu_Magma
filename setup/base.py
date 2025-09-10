@@ -3,6 +3,7 @@ from pathlib import Path
 import environ
 import logging
 import structlog
+import dj_database_url
 
 env = environ.Env(
     DEBUG=(bool, False)
@@ -15,8 +16,12 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
+DEBUG = 'RENDER' not in os.environ
 ALLOWED_HOSTS = []
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition (ORDEM CORRIGIDA)
 INSTALLED_APPS = [
@@ -39,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,10 +74,11 @@ WSGI_APPLICATION = 'setup.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # Valor padrão para o SQLite local
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600
+    )
 }
 
 # Password validation
@@ -94,6 +101,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]  # Arquivos durante o desenvolvimento
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Para coletar estáticos (deploy)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
