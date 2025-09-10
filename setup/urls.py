@@ -5,10 +5,6 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('usuarios/', include('usuarios.urls')),
-    path('', RedirectView.as_view(url='usuarios/login/')),
-    path('vendas/', include('vendas.urls', namespace='vendas')),
-    path('produtos/', include('produtos.urls', namespace='produtos')),
 
     path('api/v1/', include('setup.api_urls')),
 
