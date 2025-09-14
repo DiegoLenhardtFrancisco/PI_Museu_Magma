@@ -1,13 +1,11 @@
 import os
 from pathlib import Path
-import environ
-import logging
-import structlog
-import dj_database_url
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+import dj_database_url
+import environ
+import structlog
+
+env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +23,8 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # Application definition (ORDEM CORRIGIDA)
 INSTALLED_APPS = [
-    'usuarios.apps.UsuariosConfig',  # Deve vir antes do auth!
+    'corsheaders',
+    'usuarios.apps.UsuariosConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,7 +34,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_spectacular',
-
     # Apps
     'core.apps.CoreConfig',
     'produtos.apps.ProdutosConfig',
@@ -45,6 +43,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,7 +76,7 @@ DATABASES = {
     'default': dj_database_url.config(
         # Valor padrão para o SQLite local
         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=600
+        conn_max_age=600,
     )
 }
 
@@ -120,22 +119,20 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
-
     'EXCEPTION_HANDLER': 'core.exception_handler.custom_exception_handler',
-
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
     ],
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/hour',
         'user': '1000/hour',
-        'login': '10/minute'
-    }
+        'login': '10/minute',
+    },
 }
 
 LOGGING = {
@@ -158,11 +155,11 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
-        "project_logger": { # Um logger para o nosso próprio projeto
+        "project_logger": {  # Um logger para o nosso próprio projeto
             "handlers": ["console"],
             "level": "INFO",
         },
-    }
+    },
 }
 
 structlog.configure(
@@ -183,7 +180,17 @@ structlog.configure(
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Museu Magma API',
-    'DESCRIPTION': 'API para o sistema de gestão do Museu Magma, incluindo controle de produtos, vendas e usuários.',
+    'DESCRIPTION': (
+        'API para o sistema de gestão do Museu Magma, incluindo controle de produtos, '
+        'vendas e usuários.'
+    ),
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Endereço React em desenvolvimento
+    # "https://meu-frontend.com", # QUANDO FIZER O DEPLOY DO FRONT
+]
+
+CORS_ALLOW_CREDENTIALS = True
