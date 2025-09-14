@@ -3,6 +3,8 @@ black==25.1.0
 cfgv==3.4.0
 click==8.2.1
 distlib==0.4.0
+dj==0.1
+dj-database-url==3.0.1
 Django==5.2.6
 django-cors-headers==4.8.0
 django-environ==0.12.0
