@@ -9,11 +9,11 @@ class ProductSerializer(serializers.ModelSerializer):
     """
 
     category_display = serializers.CharField(
-        source='get_categoria_display', read_only=True
+        source='get_category_display', read_only=True
     )
 
     unit_of_measure_display = serializers.CharField(
-        source='get_unidade_medida_display', read_only=True
+        source='get_unit_of_measure_display', read_only=True
     )
 
     class Meta:
