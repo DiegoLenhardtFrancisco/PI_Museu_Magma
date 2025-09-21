@@ -189,7 +189,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Endereço React em desenvolvimento
+    "http://localhost:5173/",  # Endereço React em desenvolvimento
     # "https://meu-frontend.com", # QUANDO FIZER O DEPLOY DO FRONT
 ]
 
