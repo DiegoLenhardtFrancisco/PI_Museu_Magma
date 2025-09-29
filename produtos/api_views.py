@@ -11,6 +11,7 @@ from .models import StockMovement
 from usuarios.api_permissions import IsAdminOrStocker 
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiResponse
+from django.db import transaction
 
 @extend_schema(tags=['Produtos'])
 class ProductViewSet(viewsets.ModelViewSet):
