@@ -5,6 +5,7 @@ from produtos.models import Product
 from .api_serializers import ProductSerializer, StockMovementSerializer
 from .models import StockMovement
 from usuarios.api_permissions import IsAdminOrStocker 
+from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 @extend_schema(tags=['Produtos'])
@@ -68,6 +69,41 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(updated_by=self.request.user)
+
+    @action(detail=True, methods=['post'], url_path='adjust-stock')
+    def adjust_stock(self, request, pk=None):
+        product = self.get_object()
+        serializer = StockAdjustmentSerializer(data=request.data)
+
+        if serializer.is_valid():
+            quantity_change = serializer.validated_data['quantity_change']
+            notes = serializer.validated_data['notes']
+
+            with transaction.atomic():
+                if product.quantity + quantity_change < 0:
+                    return Response(
+                        {'error': 'Estoque insuficiente para esta saída.'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                movement_type = 'ENTRY' if quantity_change > 0 else 'ADJUST'
+
+                StockMovement.objects.create(
+                    product=product,
+                    type=movement_type,
+                    quantity=quantity_change,
+                    cost_price=product.cost_price, 
+                    notes=notes,
+                    user=request.user
+                )
+
+                product.quantity += quantity_change
+                product.save()
+
+            product_serializer = self.get_serializer(product)
+            return Response(product_serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @extend_schema(tags=['Estoque'])
 class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
