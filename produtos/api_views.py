@@ -2,7 +2,11 @@ from rest_framework import permissions, viewsets
 
 from produtos.models import Product
 
-from .api_serializers import ProductSerializer, StockMovementSerializer
+from .api_serializers import (
+    ProductSerializer,
+    StockAdjustmentSerializer,
+    StockMovementSerializer,
+)
 from .models import StockMovement
 from usuarios.api_permissions import IsAdminOrStocker 
 from rest_framework.decorators import action
