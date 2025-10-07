@@ -59,7 +59,7 @@ class SaleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrSaleOwner]
 
     filterset_fields = ['customer', 'status', 'payment_method', 'created_by']
-    search_fields = ['notes']
+    search_fields = ['customer__name', 'created_by__username', 'notes', 'id']
 
     def get_queryset(self):
         """
