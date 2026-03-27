@@ -42,3 +42,4 @@ tzdata==2025.2
 uritemplate==4.2.0
 virtualenv==20.34.0
 whitenoise==6.10.0
+qrcode==8.0
