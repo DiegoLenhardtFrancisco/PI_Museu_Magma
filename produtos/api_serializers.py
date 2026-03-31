@@ -82,6 +82,7 @@ class StockMovementSerializer(serializers.ModelSerializer):
             'timestamp',
         ]
 
+
 class StockAdjustmentSerializer(serializers.Serializer):
     """
     Serializer for stock adjustments.
@@ -90,4 +91,3 @@ class StockAdjustmentSerializer(serializers.Serializer):
 
     quantity_change = serializers.DecimalField(max_digits=10, decimal_places=2)
     notes = serializers.CharField(max_length=255, required=True)
-    

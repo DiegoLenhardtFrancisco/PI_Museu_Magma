@@ -1,6 +1,9 @@
 import os
+
 from django.core.management.base import BaseCommand
+
 from usuarios.models import CustomUser
+
 
 class Command(BaseCommand):
     help = 'Create a superuser for production from environment variables'
@@ -11,21 +14,21 @@ class Command(BaseCommand):
         password = os.environ.get('ADMIN_PASS')
 
         if not all([username, email, password]):
-            self.stdout.write(self.style.ERROR(
-                'The variables ADMIN_USER, ADMIN_EMAIL, and ADMIN_PASS must be defined.'
-            ))
+            self.stdout.write(
+                self.style.ERROR(
+                    'The variables ADMIN_USER, ADMIN_EMAIL, and ADMIN_PASS must be defined.'
+                )
+            )
             return
 
         if not CustomUser.objects.filter(username=username).exists():
             CustomUser.objects.create_superuser(
-                username=username,
-                email=email,
-                password=password
+                username=username, email=email, password=password
             )
-            self.stdout.write(self.style.SUCCESS(
-                f'Superuser "{username}" created successfully.'
-            ))
+            self.stdout.write(
+                self.style.SUCCESS(f'Superuser "{username}" created successfully.')
+            )
         else:
-            self.stdout.write(self.style.WARNING(
-                f'Superuser "{username}" already exists.'
-            ))
+            self.stdout.write(
+                self.style.WARNING(f'Superuser "{username}" already exists.')
+            )

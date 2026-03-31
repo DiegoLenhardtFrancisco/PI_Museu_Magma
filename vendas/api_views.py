@@ -1,9 +1,11 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, viewsets
+
+from usuarios.api_permissions import IsAdminOrSaleOwner
 
 from .api_serializers import CustomerSerializer, SaleItemReadSerializer, SaleSerializer
 from .models import Customer, Sale, SaleItem
-from usuarios.api_permissions import IsAdminOrSaleOwner
-from drf_spectacular.utils import extend_schema
+
 
 @extend_schema(tags=['Clientes'])
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -13,6 +15,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     **Permissions:**
     - Accessible to all authenticated users.
     """
+
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -43,6 +46,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     @extend_schema(summary="Excluir um Cliente")
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
 
 @extend_schema(tags=['Vendas'])
 class SaleViewSet(viewsets.ModelViewSet):
@@ -104,11 +108,13 @@ class SaleViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+
 @extend_schema(tags=['Vendas'])
 class SaleItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Read-only endpoint to view the items in a sale.
     """
+
     queryset = SaleItem.objects.all()
     serializer_class = SaleItemReadSerializer
     permission_classes = [permissions.IsAuthenticated]

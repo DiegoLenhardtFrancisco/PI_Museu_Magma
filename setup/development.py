@@ -1,9 +1,8 @@
-from .base import *  # noqa
 import environ
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+from .base import *  # noqa
+
+env = environ.Env(DEBUG=(bool, False))
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 

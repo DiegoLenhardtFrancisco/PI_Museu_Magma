@@ -16,14 +16,10 @@ class CustomUserAdmin(UserAdmin):
     )
 
     # Campos exibidos ao editar um usuário
-    fieldsets = UserAdmin.fieldsets + (
-        ('User Type', {'fields': ('user_type',)}),
-    )
+    fieldsets = UserAdmin.fieldsets + (('User Type', {'fields': ('user_type',)}),)
 
     # Campos exibidos ao criar um usuário (incluindo superusuário)
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('User Type', {'fields': ('user_type',)}),
-    )
+    add_fieldsets = UserAdmin.add_fieldsets + (('User Type', {'fields': ('user_type',)}),)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

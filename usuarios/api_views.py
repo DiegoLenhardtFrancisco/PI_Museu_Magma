@@ -1,9 +1,11 @@
-from rest_framework import viewsets, permissions
-from .models import CustomUser
-from .api_serializers import UserSerializer, UserCreateSerializer
-from .api_permissions import IsAdminOrIsSelf
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView 
 from drf_spectacular.utils import extend_schema
+from rest_framework import permissions, viewsets
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from .api_permissions import IsAdminOrIsSelf
+from .api_serializers import UserCreateSerializer, UserSerializer
+from .models import CustomUser
+
 
 @extend_schema(tags=['Usuários'])
 class UserViewSet(viewsets.ModelViewSet):
@@ -32,7 +34,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary="Listar Usuários (Apenas Admins)",
-        description="Retorna uma lista de todos os usuários do sistema. Acesso restrito a administradores."
+        description="Retorna uma lista de todos os usuários do sistema. Acesso restrito a administradores.",
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -57,16 +59,20 @@ class UserViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+
 @extend_schema(tags=['Autenticação'])
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
     Custom view for the token endpoint to apply a specific throttle scope.
     """
+
     throttle_scope = 'login'
 
-@extend_schema(tags=['Autenticação']) # 4. Adicione o decorador aqui também
+
+@extend_schema(tags=['Autenticação'])  # 4. Adicione o decorador aqui também
 class CustomTokenRefreshView(TokenRefreshView):
     """
     Custom view for the token refresh endpoint.
     """
+
     pass
