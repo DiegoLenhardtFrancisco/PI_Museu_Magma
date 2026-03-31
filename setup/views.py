@@ -1,7 +1,8 @@
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
-from drf_spectacular.utils import extend_schema
+
 
 @extend_schema(tags=['Monitoramento'])
 class HealthCheckView(APIView):

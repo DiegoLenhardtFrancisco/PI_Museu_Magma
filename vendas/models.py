@@ -3,9 +3,9 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
+from core.models import AuditModel
 from produtos.models import Product
 from usuarios.models import CustomUser
-from core.models import AuditModel
 
 
 class Customer(AuditModel, models.Model):

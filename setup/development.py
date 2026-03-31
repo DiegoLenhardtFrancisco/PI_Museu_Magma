@@ -1,5 +1,6 @@
-from .base import *  # noqa
 import environ
+
+from .base import *  # noqa
 
 env = environ.Env(
     DEBUG=(bool, False)

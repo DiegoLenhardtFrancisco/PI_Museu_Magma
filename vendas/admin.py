@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Customer, Sale, SaleItem
 
+
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['name', 'document', 'customer_type', 'phone', 'email']

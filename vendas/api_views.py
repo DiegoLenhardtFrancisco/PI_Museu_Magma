@@ -1,9 +1,11 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, viewsets
+
+from usuarios.api_permissions import IsAdminOrSaleOwner
 
 from .api_serializers import CustomerSerializer, SaleItemReadSerializer, SaleSerializer
 from .models import Customer, Sale, SaleItem
-from usuarios.api_permissions import IsAdminOrSaleOwner
-from drf_spectacular.utils import extend_schema
+
 
 @extend_schema(tags=['Clientes'])
 class CustomerViewSet(viewsets.ModelViewSet):

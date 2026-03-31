@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import permissions, status, viewsets
@@ -10,8 +9,8 @@ from .api_serializers import (
     CheckInResponseSerializer,
     CheckInSerializer,
     CheckOutSerializer,
-    VisitSerializer,
     VisitorSerializer,
+    VisitSerializer,
 )
 from .models import Visit, Visitor
 

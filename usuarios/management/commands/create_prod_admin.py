@@ -1,6 +1,9 @@
 import os
+
 from django.core.management.base import BaseCommand
+
 from usuarios.models import CustomUser
+
 
 class Command(BaseCommand):
     help = 'Create a superuser for production from environment variables'

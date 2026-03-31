@@ -1,7 +1,9 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import HealthCheckView
+
 from usuarios.api_views import CustomTokenObtainPairView
+
+from .views import HealthCheckView
 
 urlpatterns = [
     # Healthcheck endpoint

@@ -1,8 +1,11 @@
+from django.db import transaction
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from produtos.models import Product
+from usuarios.api_permissions import IsAdminOrStocker
 
 from .api_serializers import (
     ProductSerializer,
@@ -10,10 +13,7 @@ from .api_serializers import (
     StockMovementSerializer,
 )
 from .models import StockMovement
-from usuarios.api_permissions import IsAdminOrStocker 
 
-from drf_spectacular.utils import extend_schema, OpenApiResponse
-from django.db import transaction
 
 @extend_schema(tags=['Produtos'])
 class ProductViewSet(viewsets.ModelViewSet):

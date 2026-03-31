@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class IsAdminOrIsSelf(permissions.BasePermission):
     """
     Custom permission to only allow admins or the user themselves to access/edit.

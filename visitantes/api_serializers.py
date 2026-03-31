@@ -3,7 +3,9 @@ import io
 
 import qrcode
 from rest_framework import serializers
+
 from .models import Visit, Visitor
+
 
 def generate_qr_code_base64(data: str) -> str:
     """

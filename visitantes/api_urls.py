@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-from .api_views import VisitViewSet, VisitorViewSet
+from .api_views import VisitorViewSet, VisitViewSet
 
 router = DefaultRouter()
 router.register(r'visitors', VisitorViewSet, basename='visitor')

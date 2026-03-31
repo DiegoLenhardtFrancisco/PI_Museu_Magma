@@ -1,5 +1,6 @@
 from rest_framework.routers import DefaultRouter
-from .api_views import CustomerViewSet, SaleViewSet, SaleItemViewSet
+
+from .api_views import CustomerViewSet, SaleItemViewSet, SaleViewSet
 
 router = DefaultRouter()
 router.register(r'customers', CustomerViewSet, basename='customer')

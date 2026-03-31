@@ -1,9 +1,11 @@
-from rest_framework import viewsets, permissions
-from .models import CustomUser
-from .api_serializers import UserSerializer, UserCreateSerializer
-from .api_permissions import IsAdminOrIsSelf
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView 
 from drf_spectacular.utils import extend_schema
+from rest_framework import permissions, viewsets
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from .api_permissions import IsAdminOrIsSelf
+from .api_serializers import UserCreateSerializer, UserSerializer
+from .models import CustomUser
+
 
 @extend_schema(tags=['Usuários'])
 class UserViewSet(viewsets.ModelViewSet):

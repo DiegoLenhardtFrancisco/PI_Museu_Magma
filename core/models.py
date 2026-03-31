@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.db import models
 
+
 class AuditModel(models.Model):
     """
     An abstract base class model that provides self-updating
