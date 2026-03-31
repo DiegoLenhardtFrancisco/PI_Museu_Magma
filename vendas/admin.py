@@ -13,11 +13,27 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Sale)
 class SaleAdmin(admin.ModelAdmin):
-    list_display = ['id', 'created_at', 'sale_date', 'customer', 'total_amount', 'payment_method', 'status',  'created_by']
+    list_display = [
+        'id',
+        'created_at',
+        'sale_date',
+        'customer',
+        'total_amount',
+        'payment_method',
+        'status',
+        'created_by',
+    ]
     list_filter = ['status', 'payment_method']
     search_fields = ['customer__name', 'id']
-    readonly_fields = ['total_amount', 'created_at', 'updated_at', 'created_by', 'updated_by']
+    readonly_fields = [
+        'total_amount',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+    ]
     date_hierarchy = 'created_at'
+
 
 @admin.register(SaleItem)
 class SaleItemAdmin(admin.ModelAdmin):

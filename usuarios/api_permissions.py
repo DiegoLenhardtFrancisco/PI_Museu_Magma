@@ -24,14 +24,16 @@ class IsAdminOrIsSelf(permissions.BasePermission):
         # Admins can do anything
         if request.user.is_staff or request.user.user_type == 'ADMIN':
             return True
-        
+
         # Any other user can only access their own profile
         return obj == request.user
+
 
 class IsAdminOrStocker(permissions.BasePermission):
     """
     Allows full access to Admins and Stockers, but read-only access to others.
     """
+
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
@@ -40,15 +42,17 @@ class IsAdminOrStocker(permissions.BasePermission):
             request.user.user_type == 'ADMIN' or request.user.user_type == 'STOCKCLERK'
         )
 
+
 class IsAdminOrSaleOwner(permissions.BasePermission):
     """
     Allows Admins to access all sales, but sellers can only access their own.
     """
+
     def has_permission(self, request, view):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         if request.user.user_type == 'ADMIN':
             return True
-        
+
         return obj.created_by == request.user

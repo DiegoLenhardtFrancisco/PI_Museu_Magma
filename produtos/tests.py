@@ -174,14 +174,26 @@ class ProductAPITests(APITestCase):
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['name'], 'Fóssil de Peixe')
 
+
 class ProductAPIPermissionsTests(APITestCase):
     def setUp(self):
-        self.admin_user = CustomUser.objects.create_superuser('admin', 'admin@test.com', 'pass123')
-        self.seller_user = CustomUser.objects.create_user('seller', 'seller@test.com', 'pass123', user_type='SELLER')
-        self.stockclerk_user = CustomUser.objects.create_user('stockclerk', 'stock@test.com', 'pass123', user_type='STOCKCLERK')
+        self.admin_user = CustomUser.objects.create_superuser(
+            'admin', 'admin@test.com', 'pass123'
+        )
+        self.seller_user = CustomUser.objects.create_user(
+            'seller', 'seller@test.com', 'pass123', user_type='SELLER'
+        )
+        self.stockclerk_user = CustomUser.objects.create_user(
+            'stockclerk', 'stock@test.com', 'pass123', user_type='STOCKCLERK'
+        )
         self.product = Product.objects.create(
-            name="Turmalina", code="000003", cost_price="300.00", quantity="20",
-            unit_of_measure="UNIT", category="MINERAL", created_by=self.admin_user
+            name="Turmalina",
+            code="000003",
+            cost_price="300.00",
+            quantity="20",
+            unit_of_measure="UNIT",
+            category="MINERAL",
+            created_by=self.admin_user,
         )
 
     def test_seller_can_list_products(self):
@@ -193,7 +205,13 @@ class ProductAPIPermissionsTests(APITestCase):
     def test_seller_cannot_create_product(self):
         """Sellers MUST NOT have write permission (POST)."""
         self.client.force_authenticate(user=self.seller_user)
-        data = {"name": "Produto Proibido", "cost_price": "10.00", "quantity": 1, "unit_of_measure": "UNIT", "category": "MINERAL"}
+        data = {
+            "name": "Produto Proibido",
+            "cost_price": "10.00",
+            "quantity": 1,
+            "unit_of_measure": "UNIT",
+            "category": "MINERAL",
+        }
         response = self.client.post(reverse('product-list'), data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -201,11 +219,16 @@ class ProductAPIPermissionsTests(APITestCase):
         """The stock clerk MUST have write permission (POST)."""
         self.client.force_authenticate(user=self.stockclerk_user)
         data = {
-            "name": "Quartzo Rosa", "cost_price": "50.00", "profit_margin": "100.00",
-            "quantity": "20", "unit_of_measure": "UNIT", "category": "MINERAL"
+            "name": "Quartzo Rosa",
+            "cost_price": "50.00",
+            "profit_margin": "100.00",
+            "quantity": "20",
+            "unit_of_measure": "UNIT",
+            "category": "MINERAL",
         }
         response = self.client.post(reverse('product-list'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
 
 class StockMovementAPITests(APITestCase):
     def setUp(self):

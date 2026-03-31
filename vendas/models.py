@@ -46,11 +46,15 @@ class Sale(AuditModel, models.Model):
         ('TICKET', 'Boleto'),
     ]
 
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.SET_NULL, null=True, blank=True
+    )
     sale_date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='OPEN')
-    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    discount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)]
+    )
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     notes = models.TextField(blank=True)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -83,7 +87,9 @@ class Sale(AuditModel, models.Model):
 class SaleItem(models.Model):
     sale = models.ForeignKey(Sale, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))]
+    )
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:

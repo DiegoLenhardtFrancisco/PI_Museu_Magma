@@ -15,6 +15,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     **Permissions:**
     - Accessible to all authenticated users.
     """
+
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -45,6 +46,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     @extend_schema(summary="Excluir um Cliente")
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
 
 @extend_schema(tags=['Vendas'])
 class SaleViewSet(viewsets.ModelViewSet):
@@ -106,11 +108,13 @@ class SaleViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+
 @extend_schema(tags=['Vendas'])
 class SaleItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Read-only endpoint to view the items in a sale.
     """
+
     queryset = SaleItem.objects.all()
     serializer_class = SaleItemReadSerializer
     permission_classes = [permissions.IsAuthenticated]

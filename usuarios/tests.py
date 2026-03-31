@@ -14,8 +14,10 @@ class UserAPITests(APITestCase):
             username='admin', email='admin@example.com', password='password123'
         )
         self.regular_user = CustomUser.objects.create_user(
-            username='seller', email='seller@example.com', password='password123',
-            user_type='VENDEDOR'
+            username='seller',
+            email='seller@example.com',
+            password='password123',
+            user_type='VENDEDOR',
         )
 
     # --- Tests performed as an ADMIN user ---
@@ -45,11 +47,15 @@ class UserAPITests(APITestCase):
         """
         self.client.force_authenticate(user=self.admin_user)
         url = reverse('user-list')
-        data = {"username": "newuser", "email": "new@user.com", "password": "password123", "user_type": "STOCKCLERK"}
+        data = {
+            "username": "newuser",
+            "email": "new@user.com",
+            "password": "password123",
+            "user_type": "STOCKCLERK",
+        }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(CustomUser.objects.count(), 3)
-
 
     # --- Tests performed as a REGULAR user ---
     def test_regular_user_cannot_list_users(self):
@@ -98,7 +104,11 @@ class UserAPITests(APITestCase):
         """
         self.client.force_authenticate(user=self.regular_user)
         url = reverse('user-list')
-        data = {"username": "anotheruser", "email": "another@user.com", "password": "password123"}
+        data = {
+            "username": "anotheruser",
+            "email": "another@user.com",
+            "password": "password123",
+        }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 

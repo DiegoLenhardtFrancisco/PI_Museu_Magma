@@ -34,7 +34,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary="Listar Usuários (Apenas Admins)",
-        description="Retorna uma lista de todos os usuários do sistema. Acesso restrito a administradores."
+        description="Retorna uma lista de todos os usuários do sistema. Acesso restrito a administradores.",
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -59,16 +59,20 @@ class UserViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+
 @extend_schema(tags=['Autenticação'])
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
     Custom view for the token endpoint to apply a specific throttle scope.
     """
+
     throttle_scope = 'login'
 
-@extend_schema(tags=['Autenticação']) # 4. Adicione o decorador aqui também
+
+@extend_schema(tags=['Autenticação'])  # 4. Adicione o decorador aqui também
 class CustomTokenRefreshView(TokenRefreshView):
     """
     Custom view for the token refresh endpoint.
     """
+
     pass

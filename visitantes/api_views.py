@@ -146,9 +146,7 @@ class VisitViewSet(viewsets.ReadOnlyModelViewSet):
         request=CheckOutSerializer,
         responses={
             200: VisitSerializer,
-            400: OpenApiResponse(
-                description="Dados inválidos ou visita já finalizada."
-            ),
+            400: OpenApiResponse(description="Dados inválidos ou visita já finalizada."),
             404: OpenApiResponse(description="Ticket não encontrado."),
         },
     )

@@ -165,7 +165,7 @@ class SaleAPITests(APITestCase):
 
         url = reverse('sale-detail', kwargs={'pk': sale.pk})
         response = self.client.get(url, format='json')
-        
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_admin_can_see_any_sale(self):
@@ -174,14 +174,14 @@ class SaleAPITests(APITestCase):
         """
         self.test_create_sale_success()
         sale = Sale.objects.first()
-        
+
         admin_user = CustomUser.objects.create_superuser(
             username='admin', email='admin@test.com', password='password123'
         )
         self.client.force_authenticate(user=admin_user)
-    
+
         url = reverse('sale-detail', kwargs={'pk': sale.pk})
         response = self.client.get(url, format='json')
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], sale.id)

@@ -30,7 +30,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary="Listar Produtos",
-        description="Retorna uma lista paginada de todos os produtos ativos. Acesso de leitura para todos os usuários autenticados."
+        description="Retorna uma lista paginada de todos os produtos ativos. Acesso de leitura para todos os usuários autenticados.",
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -41,8 +41,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         responses={
             201: OpenApiResponse(description="Produto criado com sucesso."),
             400: OpenApiResponse(description="Erro de validação nos dados enviados."),
-            403: OpenApiResponse(description="Acesso negado. O usuário não tem permissão para criar produtos.")
-        }
+            403: OpenApiResponse(
+                description="Acesso negado. O usuário não tem permissão para criar produtos."
+            ),
+        },
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -90,7 +92,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 if product.quantity + quantity_change < 0:
                     return Response(
                         {'error': 'Estoque insuficiente para esta saída.'},
-                        status=status.HTTP_400_BAD_REQUEST
+                        status=status.HTTP_400_BAD_REQUEST,
                     )
 
                 movement_type = 'ENTRY' if quantity_change > 0 else 'ADJUST'
@@ -99,9 +101,9 @@ class ProductViewSet(viewsets.ModelViewSet):
                     product=product,
                     type=movement_type,
                     quantity=quantity_change,
-                    cost_price=product.cost_price, 
+                    cost_price=product.cost_price,
                     notes=notes,
-                    user=request.user
+                    user=request.user,
                 )
 
                 product.quantity += quantity_change
@@ -111,6 +113,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response(product_serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @extend_schema(tags=['Estoque'])
 class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
@@ -130,7 +133,7 @@ class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
 
     @extend_schema(
         summary="Listar Movimentações de Estoque",
-        description="Retorna um histórico de todas as movimentações de estoque (entradas, saídas e ajustes)."
+        description="Retorna um histórico de todas as movimentações de estoque (entradas, saídas e ajustes).",
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
