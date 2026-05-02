@@ -11,12 +11,8 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .services import (
-    get_product_data,
-    get_revenue_data,
-    get_sales_data,
-    get_visitor_data,
-)
+from .services import (get_product_data, get_revenue_data, get_sales_data,
+                       get_visitor_data)
 
 
 def parse_date_param(value, param_name):
