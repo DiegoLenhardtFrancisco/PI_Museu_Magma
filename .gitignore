@@ -16,3 +16,9 @@ venv/
 .env
 .github
 .idea/
+
+# Migrações – versionar apenas o __init__.py
+**/migrations/*
+!**/migrations/__init__.py
+**/migrações/*
+!**/migrações/__init__.py
