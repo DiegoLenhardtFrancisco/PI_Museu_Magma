@@ -92,9 +92,7 @@ def parse_date_param(value, param_name):
                 },
             },
         },
-        400: {
-            "description": "Parâmetro de data em formato inválido."
-        },
+        400: {"description": "Parâmetro de data em formato inválido."},
     },
 )
 class DashboardView(APIView):

@@ -143,12 +143,8 @@ class FixedCostEntryViewSet(viewsets.ModelViewSet):
             qs = qs.filter(status=status_param)
 
         totals = qs.aggregate(
-            total_pending=Sum(
-                'value', filter=Q(status=FixedCostEntry.Status.PENDING)
-            ),
-            total_paid=Sum(
-                'value', filter=Q(status=FixedCostEntry.Status.PAID)
-            ),
+            total_pending=Sum('value', filter=Q(status=FixedCostEntry.Status.PENDING)),
+            total_paid=Sum('value', filter=Q(status=FixedCostEntry.Status.PAID)),
             total_overall=Sum('value'),
         )
 

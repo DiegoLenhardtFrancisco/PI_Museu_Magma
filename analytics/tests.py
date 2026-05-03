@@ -194,8 +194,7 @@ class DashboardDataCorrectnessTests(APITestCase):
     def test_by_payment_method_shows_pix(self):
         response = self.client.get(self.url)
         methods = [
-            item["method"]
-            for item in response.data["revenue"]["by_payment_method"]
+            item["method"] for item in response.data["revenue"]["by_payment_method"]
         ]
         self.assertIn("PIX", methods)
 

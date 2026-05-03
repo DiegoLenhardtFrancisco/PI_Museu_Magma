@@ -18,8 +18,7 @@ def get_revenue_data(start_date=None, end_date=None):
     total_revenue = sales_qs.aggregate(total=Sum("total_amount"))["total"] or 0
 
     by_month = (
-        sales_qs
-        .annotate(month=TruncMonth("sale_date"))
+        sales_qs.annotate(month=TruncMonth("sale_date"))
         .values("month")
         .annotate(revenue=Sum("total_amount"))
         .order_by("month")
@@ -35,8 +34,7 @@ def get_revenue_data(start_date=None, end_date=None):
     ]
 
     by_payment = (
-        sales_qs
-        .values("payment_method")
+        sales_qs.values("payment_method")
         .annotate(revenue=Sum("total_amount"), count=Count("id"))
         .order_by("-revenue")
     )
@@ -95,8 +93,7 @@ def get_product_data(start_date=None, end_date=None):
         sale_items_qs = sale_items_qs.filter(sale__sale_date__date__lte=end_date)
 
     top_selling = (
-        sale_items_qs
-        .values("product__id", "product__name", "product__category")
+        sale_items_qs.values("product__id", "product__name", "product__category")
         .annotate(
             total_quantity_sold=Sum("quantity"),
             total_revenue=Sum(
@@ -121,8 +118,7 @@ def get_product_data(start_date=None, end_date=None):
     ]
 
     low_stock = (
-        Product.objects
-        .filter(is_active=True, quantity__lte=F("minimum_quantity"))
+        Product.objects.filter(is_active=True, quantity__lte=F("minimum_quantity"))
         .values("id", "name", "quantity", "minimum_quantity", "category")
         .order_by("quantity")[:20]
     )
@@ -157,8 +153,7 @@ def get_visitor_data(start_date=None, end_date=None):
     total_count = visits_qs.count()
 
     by_type = (
-        visits_qs
-        .values("visitor__visitor_type")
+        visits_qs.values("visitor__visitor_type")
         .annotate(count=Count("id"))
         .order_by("-count")
     )
@@ -183,8 +178,7 @@ def get_visitor_data(start_date=None, end_date=None):
     ]
 
     by_month = (
-        visits_qs
-        .annotate(month=TruncMonth("check_in_at"))
+        visits_qs.annotate(month=TruncMonth("check_in_at"))
         .values("month")
         .annotate(count=Count("id"))
         .order_by("month")
