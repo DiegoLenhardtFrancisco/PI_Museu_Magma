@@ -3,8 +3,7 @@ from rest_framework import permissions, viewsets
 
 from usuarios.api_permissions import IsAdminOrSaleOwner
 
-from .api_serializers import (CustomerSerializer, SaleItemReadSerializer,
-                              SaleSerializer)
+from .api_serializers import CustomerSerializer, SaleItemReadSerializer, SaleSerializer
 from .models import Customer, Sale, SaleItem
 
 

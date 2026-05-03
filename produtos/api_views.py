@@ -7,8 +7,11 @@ from rest_framework.response import Response
 from produtos.models import Product
 from usuarios.api_permissions import IsAdminOrStocker
 
-from .api_serializers import (ProductSerializer, StockAdjustmentSerializer,
-                              StockMovementSerializer)
+from .api_serializers import (
+    ProductSerializer,
+    StockAdjustmentSerializer,
+    StockMovementSerializer,
+)
 from .models import StockMovement
 
 

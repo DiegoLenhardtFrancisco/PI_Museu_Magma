@@ -1,12 +1,10 @@
 from django.db.models import Q, Sum
-from drf_spectacular.utils import (OpenApiParameter, OpenApiResponse,
-                                   extend_schema)
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .api_serializers import (FixedCostEntrySerializer,
-                              FixedCostSummarySerializer)
+from .api_serializers import FixedCostEntrySerializer, FixedCostSummarySerializer
 from .models import FixedCostEntry
 
 

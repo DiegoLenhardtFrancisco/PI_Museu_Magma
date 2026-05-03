@@ -1,5 +1,4 @@
-from django.db.models import (Avg, Count, DecimalField, ExpressionWrapper, F,
-                              Sum)
+from django.db.models import Avg, Count, DecimalField, ExpressionWrapper, F, Sum
 from django.db.models.functions import TruncMonth
 
 from produtos.models import Product
