@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Linters and Formatters Check
         run: |
-          isort --check-only .
+          isort --check-only . --settings-path .isort.cfg
           black --check .
           flake8 .
 
