@@ -43,3 +43,5 @@ uritemplate==4.2.0
 virtualenv==20.34.0
 whitenoise==6.10.0
 qrcode==8.0
+black==23.12.1
+isort==5.13.2
