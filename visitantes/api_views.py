@@ -5,13 +5,9 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .api_serializers import (
-    CheckInResponseSerializer,
-    CheckInSerializer,
-    CheckOutSerializer,
-    VisitorSerializer,
-    VisitSerializer,
-)
+from .api_serializers import (CheckInResponseSerializer, CheckInSerializer,
+                              CheckOutSerializer, VisitorSerializer,
+                              VisitSerializer)
 from .models import Visit, Visitor
 
 
