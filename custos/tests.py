@@ -9,7 +9,14 @@ from usuarios.models import CustomUser
 from .models import FixedCostEntry
 
 
-def make_entry(user, category='RENT', value='500.00', days_offset=10, entry_status='PENDING', description=''):
+def make_entry(
+    user,
+    category='RENT',
+    value='500.00',
+    days_offset=10,
+    entry_status='PENDING',
+    description='',
+):
     """
     Helper to create a FixedCostEntry quickly in tests.
     days_offset: how many days from today the due_date will be (negative = past).
@@ -253,16 +260,28 @@ class FixedCostSummaryTests(APITestCase):
         self.summary_url = reverse('fixed-cost-entry-summary')
 
         FixedCostEntry.objects.create(
-            category='RENT', value='2000.00', due_date='2026-04-05',
-            status='PENDING', created_by=self.user, updated_by=self.user,
+            category='RENT',
+            value='2000.00',
+            due_date='2026-04-05',
+            status='PENDING',
+            created_by=self.user,
+            updated_by=self.user,
         )
         FixedCostEntry.objects.create(
-            category='ELECTRICITY', value='350.00', due_date='2026-04-10',
-            status='PENDING', created_by=self.user, updated_by=self.user,
+            category='ELECTRICITY',
+            value='350.00',
+            due_date='2026-04-10',
+            status='PENDING',
+            created_by=self.user,
+            updated_by=self.user,
         )
         FixedCostEntry.objects.create(
-            category='WATER', value='120.00', due_date='2026-04-15',
-            status='PAID', created_by=self.user, updated_by=self.user,
+            category='WATER',
+            value='120.00',
+            due_date='2026-04-15',
+            status='PAID',
+            created_by=self.user,
+            updated_by=self.user,
         )
 
     def test_summary_returns_correct_totals(self):
@@ -275,8 +294,12 @@ class FixedCostSummaryTests(APITestCase):
     def test_summary_filtered_by_month(self):
         # Add entry in a different month — should not affect April summary
         FixedCostEntry.objects.create(
-            category='INTERNET', value='200.00', due_date='2026-03-20',
-            status='PENDING', created_by=self.user, updated_by=self.user,
+            category='INTERNET',
+            value='200.00',
+            due_date='2026-03-20',
+            status='PENDING',
+            created_by=self.user,
+            updated_by=self.user,
         )
         response = self.client.get(self.summary_url, {'month': '2026-04'})
         self.assertEqual(response.data['total_overall'], '2470.00')

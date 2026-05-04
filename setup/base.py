@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'vendas.apps.VendasConfig',
     'visitantes.apps.VisitantesConfig',
     'custos.apps.CustosConfig',
+    'analytics.apps.AnalyticsConfig',
 ]
 
 MIDDLEWARE = [

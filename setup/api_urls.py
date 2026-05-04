@@ -17,4 +17,5 @@ urlpatterns = [
     path('', include('usuarios.api_urls')),
     path('', include('visitantes.api_urls')),
     path('', include('custos.api_urls')),
+    path('', include('analytics.api_urls')),
 ]
